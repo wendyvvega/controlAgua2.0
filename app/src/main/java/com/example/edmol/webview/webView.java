@@ -1,9 +1,11 @@
 package com.example.edmol.webview;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -12,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
@@ -27,19 +28,16 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.EntryXComparator;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.ListIterator;
 
 public class webView extends AppCompatActivity implements OnChartGestureListener,View.OnClickListener, OnChartValueSelectedListener, AdapterView.OnItemSelectedListener {
     private WebView webView;
@@ -47,8 +45,26 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
     private HorizontalBarChart barraH;
     private ImageView flecha;
     private Spinner spFecha,spLitros,spTgraf;
+
     private String Url = "https://reports.zoho.com/open-view/1818177000000002051/2bec8a48eadcfe479fb9737b6b02038d";
     private RelativeLayout rl;
+    private  XAxis axisX;
+    private LineDataSet dataSetL;
+    private BarDataSet dataSetB;
+    private final ArrayList<String> xVals = new ArrayList<String>();
+    private  ArrayList<Float> litrosNormales = new ArrayList<>();
+    private  ArrayList<Float> datosGalones = new ArrayList<>();
+    private  ArrayList<Float> datosMc = new ArrayList<>();
+    private ArrayList<String> xNewData = new ArrayList<String>();
+    private ArrayList<BarEntry> entradaBarraLitros = new ArrayList<>();
+    private ArrayList<BarEntry> entradaBarraGalon = new ArrayList<>();
+    private ArrayList<BarEntry> entradaBarraMc = new ArrayList<>();
+    private ArrayList<Entry> entradaLinea = new ArrayList<>();
+    private ArrayList<Entry> entradaLineaGalon = new ArrayList<>();
+    private ArrayList<Entry> entradaLineaMc = new ArrayList<>();
+
+    private  AdminBD bd = new AdminBD(this);
+    private SQLiteDatabase base = bd.getWritableDatabase();
     final String[] meses = new String[] { "Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dec"};
     int seleccion;
     @Override
@@ -69,6 +85,9 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         flecha = findViewById(R.id.flechaAtr);
         flecha.setOnClickListener(this);
         seleccion= spLitros.getSelectedItemPosition();
+        barraH = findViewById(R.id.barChart);
+        chart = findViewById(R.id.lineChart);
+
 
         ArrayAdapter <CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.txtFechas,          android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -104,13 +123,13 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
 
 
-        grafLinea();
-        barras();
+        //grafLinea();
+        //barras();
     }
 
 
-    public void grafLinea(){
-      chart = findViewById(R.id.lineChart);
+    public void grafLinea(int ln){
+      
         Description desc = new Description();
         desc.setText("Gasto de agua");
         chart.setDescription(desc);
@@ -119,30 +138,103 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         chart.setDragEnabled(true);
         chart.setScaleEnabled(true);
         chart.setPinchZoom(true);
+        switch (ln){
+            case 0:
+                mostrarLineaMes();
+                break;
+            case 1:
+                mostrarLineaDia();
+                break;
+            case 2:mostrarLineaHora();
+            break;
+        }
 
-        LineDataSet dataSet = new LineDataSet(getDataset(),"Visualiza el consumo de agua");
-        dataSet.setHighlightEnabled(true); // allow highlighting for DataSet
-        XAxis axisX = chart.getXAxis();
+
+
+    }
+    public void mostrarLineaMes(){
+       chart.clear();
+       
+        for (int i = 0; i < obtenerLitrosMes().size(); i++) {
+            entradaLinea.add(new Entry(i, obtenerLitrosMes().get(i)));
+            xVals.add(obtenerMes().get(i));
+        }
+        cfgLinea(entradaLinea);
+        cfgLineaFecha(xVals);
+
+    }
+
+    public void mostrarLineaDia(){
+        chart.clear();
+       
+
+        for (int i = 0; i < obtenerLitrosDia().size(); i++) {
+            entradaLinea.add(new Entry(i, obtenerLitrosDia().get(i)));
+            xVals.add(obtenerDia().get(i));
+        }
+        cfgLinea(entradaLinea);
+        cfgLineaFecha(xVals);
+        //Inicializar e introducir datos
+
+
+    }
+    public void mostrarLineaHora(){
+        chart.clear();
+
+        for (int i = 0; i < obtenerLitrosHora().size(); i++) {
+            entradaLinea.add(new Entry(i, obtenerLitrosHora().get(i)));
+            xVals.add(obtenerHora().get(i));
+        }
+        cfgLinea(entradaLinea);
+        cfgLineaFecha(xVals);
+
+    }
+    public void cfgLineaFecha(final ArrayList <String> xVals ){
+
+        //Inicializar e introducir datos
+
+        axisX = chart.getXAxis();
         axisX.setGranularity(1f);
-        axisX.setValueFormatter(formatter);
-        // set this to false to disable the drawing of highlight indicator (lines)
-        dataSet.setDrawHighlightIndicators(true);
-        dataSet.setHighLightColor(Color.BLACK);
-        dataSet.setDrawFilled(true);
-        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-        Collections.sort(getDataset(), new EntryXComparator());
-        ArrayList <ILineDataSet> dataSets = new ArrayList<>();
-        dataSets.add(dataSet);
-        LineData lineData= new LineData(dataSets);
-        //lineData.setValueFormatter(new EjeX(getEjeXValores()));
-        chart.setData(lineData);
+        axisX.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                int intValue = (int)value;
+                return (xVals.size() > intValue && intValue >= 0) ? xVals.get(intValue) : "";
+            }
+            public int getDecimalDigits() {  return 0; }
+        });
+
         chart.animateXY(5000,5000);
-        lineData.setValueTextSize(18f);
+        chart.notifyDataSetChanged();
         chart.invalidate();
 
     }
-    public void barras(){
-        barraH = findViewById(R.id.barChart);
+
+    public void cfgLinea( final ArrayList <Entry> entrada){
+
+        dataSetL = new LineDataSet(entrada,"Visualiza el consumo de agua");
+        dataSetL.setHighlightEnabled(true); // allow highlighting for DataSet
+        // set this to false to disable the drawing of highlight indicator (lines)
+        dataSetL.setDrawHighlightIndicators(true);
+        dataSetL.setHighLightColor(Color.BLACK);
+        dataSetL.setDrawFilled(true);
+        dataSetL.setColors(ColorTemplate.COLORFUL_COLORS);
+        Collections.sort(entrada, new EntryXComparator());
+        LineData lineData= new LineData(dataSetL);
+        //Ver como pasar de parámtero un data para meter dataset dinámicos desde
+        //El switch por fecha
+        chart.setData(lineData);
+        chart.animateXY(5000,5000);
+        lineData.setValueTextSize(18f);
+        lineData.notifyDataChanged();
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+
+    }
+    
+    /***********************************************************************************/
+    public void barras(int k){
+       
 
         Description desc = new Description();
         desc.setText("Gasto de agua");
@@ -153,31 +245,16 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         barraH.setDragEnabled(true);
         barraH.setScaleEnabled(true);
         barraH.setPinchZoom(true);
-
-        //Inicializar e introducir datos
-        BarDataSet dataSet = new BarDataSet(getBarDataset(),"Agua gastada");
-        dataSet.setColor(Color.rgb(7,169,234));
-        dataSet.setHighLightAlpha(2);
-        dataSet.setHighLightColor(Color.BLACK);
-        //
-        //Ordenar datos
-
-        Collections.sort(getBarDataset(), new EntryXComparator());
-        //Crear los datos para meterlos a la gráfica
-
-       BarData data = new BarData(dataSet );
-       XAxis axisX = barraH.getXAxis();
-       axisX.setGranularity(1f);
-       axisX.setValueFormatter(formatter);
-        data.setBarWidth(0.9f);
-
-
-       //Meter datos en la gráfica
-       barraH.setData(data);
-        barraH.animateXY(2000,2000);
-        barraH.setFitBars(true);
-        barraH.invalidate();
-
+        switch (k){
+            case 0:
+                mostrarBarraMes();
+                break;
+            case 1:
+                mostrarBarraDia();
+                break;
+            case 2:mostrarBarraHora();
+            break;
+        }
 
 
     }
@@ -192,48 +269,224 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
         public int getDecimalDigits() {  return 0; }
     };
-    private ArrayList <BarEntry> getBarDataset(){
-        ArrayList<BarEntry> entradas = new ArrayList<>();
+/*************************************Convertir de litros a **************************************************************************/
+    public ArrayList<Float> litroGalon(){
 
-        entradas.add(new BarEntry(0, 30f));
-        entradas.add(new BarEntry(1, 80f));
-        entradas.add(new BarEntry(2, 60f));
-        entradas.add(new BarEntry(3, 50f));
-        // gap of 2f
-        entradas.add(new BarEntry(4, 70f));
-        entradas.add(new BarEntry(5, 60f));
-
-
-        return entradas;
-
-    }
-    private ArrayList<Entry> getDataset(){
-        ArrayList<Entry> entradas = new ArrayList<Entry>();
-        entradas.add(new Entry(0,215f));
-        entradas.add(new Entry(1,36f));
-        entradas.add(new Entry(2,478f));
-        entradas.add(new Entry(3,120f));
-
-        return  entradas;
+        chart.clearValues();
+            ListIterator <Float> k= litrosNormales.listIterator();
+            Float h=0f;
+            while(k.hasNext()){
+                h =  k.next();
+               datosGalones.add(h);
+            }
+            Log.d("NewData",String.valueOf(litrosNormales));
+            return datosGalones;
 
     }
-    private ArrayList<String> getEjeXValores(){
-        ArrayList<String> EjeX= new ArrayList<String>();
-        EjeX.add("Ene");
-        EjeX.add("Feb");
-        EjeX.add("Mar");
-        EjeX.add("Abr");
-        EjeX.add("May");
-        EjeX.add("Jun");
-        EjeX.add("Jul");
-        EjeX.add("Ago");
-        EjeX.add("Sept");
-        EjeX.add("Oct");
-        EjeX.add("Nov");
-        EjeX.add("Dic");
-        return EjeX;
+
+
+    public ArrayList<Float> litrosMc(){
+        chart.clearValues();
+        ListIterator <Float> k= litrosNormales.listIterator();
+        Float h=0f;
+
+        while(k.hasNext()){
+            h =  k.next();
+           datosMc.add(h);
+        }
+        Log.d("NewData",String.valueOf(litrosNormales));
+        return datosMc;
 
     }
+    /*************************************Convertir de litros a **************************************************************************/
+    public void mostrarLitrosMc(){
+
+        ListIterator <Float> k= litrosMc().listIterator();
+        Float h=0f;
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaBarraMc.add(new BarEntry(k.nextIndex(),h/1000f));
+        }
+    }
+    public void mostrarLitrosGalonBarra(){
+
+        ListIterator <Float> k= litroGalon().listIterator();
+        Float h=0f;
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaBarraGalon.add(new BarEntry(k.nextIndex(),h/3.785f));
+        }
+    }
+
+    /**********************************Convertir lineal**********************************************************/
+    public void mostrarLitrosMcLinea(){
+
+        ListIterator <Float> k= litrosMc().listIterator();
+        Float h=0f;
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaLineaMc.add(new BarEntry(k.nextIndex(),h/1000f));
+        }
+    }
+    public void mostrarLitrosGalonBarraLinea(){
+
+        ListIterator <Float> k= litroGalon().listIterator();
+        Float h=0f;
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaLineaGalon.add(new BarEntry(k.nextIndex(),h/3.785f));
+        }
+    }
+
+    /**********************************Convertir lineal**********************************************************/
+
+
+
+        // we don't draw numbers, so no decimal digits needed
+        /****************************Insertar datos por primera vez Barras**********************************************/
+       public void mostrarBarraMes(){
+           if(!barraH.isEmpty()){
+               barraH.clear();
+           }
+           obtenerMes();
+           obtenerLitrosMes();
+           ListIterator <Float> k= litrosNormales.listIterator();
+           ListIterator <String>s = xNewData.listIterator();
+           Float h=0f;
+           String l="";
+
+           while(k.hasNext()){
+               h =  k.next();
+               entradaBarraLitros.add(new BarEntry(k.nextIndex(),h));
+           }
+           while(s.hasNext()){
+               l=s.next();
+               xVals.add(l);
+           }
+
+
+           cfgBarraFecha(xVals);
+
+       }
+    public void mostrarBarraDia(){
+        if(!barraH.isEmpty()){
+            barraH.clear();
+        }
+        obtenerDia();
+        obtenerLitrosDia();
+        ListIterator <Float> k= litrosNormales.listIterator();
+        ListIterator <String>s = xNewData.listIterator();
+        Float h=0f;
+        String l="";
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaBarraLitros.add(new BarEntry(k.nextIndex(),h));
+        }
+        while(s.hasNext()){
+            l=s.next();
+            xVals.add(l);
+        }
+
+
+        cfgBarraFecha(xVals);
+
+    }
+    public void mostrarBarraHora(){
+        if(!barraH.isEmpty()){
+            barraH.clear();
+        }
+        obtenerHora();
+        obtenerLitrosHora();
+        ListIterator <Float> k= litrosNormales.listIterator();
+        ListIterator <String>s = xNewData.listIterator();
+        Float h=0f;
+        String l="";
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaBarraLitros.add(new BarEntry(k.nextIndex(),h));
+        }
+        while(s.hasNext()){
+            l=s.next();
+            xVals.add(l);
+        }
+
+
+        cfgBarraFecha(xVals);
+
+    }
+
+
+
+       public void cfgBarra(ArrayList <BarEntry> entradaBarra){
+
+           //Inicializar e introducir datos
+           dataSetB = new BarDataSet(entradaBarra,"Agua gastada");
+           dataSetB.setColor(Color.rgb(7,169,234));
+           dataSetB.setHighLightAlpha(2);
+           dataSetB.setHighLightColor(Color.BLACK);
+           //
+           //Ordenar datos
+
+           Collections.sort(entradaBarra, new EntryXComparator());
+           //Crear los datos para meterlos a la gráfica
+
+           BarData data = new BarData(dataSetB);
+
+           data.setBarWidth(0.9f);
+
+
+           //Meter datos en la gráfica
+           barraH.setData(data);
+           barraH.animateXY(2000,2000);
+           barraH.setFitBars(true);
+           data.notifyDataChanged();
+           barraH.notifyDataSetChanged();
+           barraH.invalidate();
+
+       }
+    public void cfgBarraFecha(final ArrayList <String> xVals ){
+
+        //Inicializar e introducir datos
+
+        axisX = barraH.getXAxis();
+        axisX.setGranularity(1f);
+        axisX.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                int intValue = (int)value;
+                return (xVals.size() > intValue && intValue >= 0) ? xVals.get(intValue) : "";
+            }
+            public int getDecimalDigits() {  return 0; }
+        });
+
+        barraH.animateXY(2000,2000);
+        barraH.setFitBars(true);
+        barraH.notifyDataSetChanged();
+        barraH.invalidate();
+
+    }
+
+
+
+   /*private ArrayList<Entry> getDataset(){
+
+
+
+
+        entradaBarraLitros.add(new Entry(1,36f));
+        entradaBarraLitros.add(new Entry(2,478f));
+        entradaBarraLitros.add(new Entry(3,120f));
+
+        return  entradaBarraLitros;
+
+    }*/
+
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view,int i , long l) {
@@ -242,64 +495,63 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
         switch(item){
             case "Lineal":
-
-                if(chart.getVisibility()==view.VISIBLE){
-                    grafLinea();
-                    return;
-                }
-                if(barraH.getVisibility() == view.VISIBLE){
+                if(chart.getVisibility() == view.VISIBLE || barraH.getVisibility()==view.VISIBLE) {
+                    chart.setVisibility(View.VISIBLE);
                     barraH.setVisibility(View.GONE);
-                    chart.setVisibility(view.VISIBLE);
-                    grafLinea();
-
+                    switch (item) {
+                        case "Mes":
+                            grafLinea(0);
+                            break;
+                        case "Día":
+                            grafLinea(1);
+                            break;
+                        case "Hora(Hoy)":
+                            grafLinea(2);
+                            break;
+                        case "Litros":
+                            cfgLinea(entradaLinea);
+                            break;
+                        case "Galones":
+                            mostrarLitrosGalonBarraLinea();
+                            cfgLinea(entradaLineaGalon);
+                            break;
+                        case "Metros Cúbicos":
+                            mostrarLitrosMcLinea();
+                            cfgLinea(entradaLineaMc);
+                            break;
+                    }
+                    break;
                 }
-                break;
             case "Barras-Horizontal":
-                if(barraH.getVisibility()==view.VISIBLE){
-                    return;
-                }
-                if(chart.getVisibility() == view.VISIBLE){
+
+                if(chart.getVisibility() == view.VISIBLE || barraH.getVisibility()==view.VISIBLE){
                      chart.setVisibility(View.GONE);
                     barraH.setVisibility(View.VISIBLE);
-                    barras();
-                }break;
-           case "Litros":
-
-               if(seleccion !=i && seleccion == 1 ){
-
-               }else {
-                   if (seleccion !=i && seleccion ==2){
-
-                   }
-               }
-               seleccion=i;
-                break;
-            case "Galones":
-
-                if(seleccion !=i && seleccion == 0 ){
-
-                }else {
-                    if (seleccion !=i && seleccion ==2){
-
+                    switch (item){
+                        case "Mes":
+                            barras(0);
+                            break;
+                        case "Día":
+                            barras(1);
+                            break;
+                        case "Hora(Hoy)":
+                            barras(2);
+                            break;
+                        case "Litros":
+                            cfgBarra(entradaBarraLitros);
+                            break;
+                        case "Galones":
+                            mostrarLitrosGalonBarra();
+                            cfgBarra(entradaBarraGalon);
+                            break;
+                        case "Metros Cúbicos":
+                            mostrarLitrosMc();
+                            cfgBarra(entradaBarraMc);
+                            break;
+                        
                     }
-                }
-                seleccion=i;
-                break;
-
-            case "Metros Cúbicos":
-
-                if(seleccion !=i && seleccion == 0 ){
-
-                }else {
-                    if (seleccion !=i && seleccion ==1){
-
-                    }
-                }
-                seleccion=i;
-                break;
-
-
-
+                    
+                } break;
         }
     }
 
@@ -317,57 +569,65 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         }
     }
 
-    private class EjeX implements IValueFormatter {
-        private List<String> labels;
-        public EjeX (List<String> labels){
-            this.labels = labels;
-
-        }
-
-        @Override
-        public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-            try {
-                int index = (int) value;
-                return this.labels.get(index);
-            }catch (Exception e){
-                return null;
-            }
-        }
-    }
-    public void llenarTabla(LineChart linea) {
+public ArrayList <String> obtenerDia(){
         AdminBD bd = new AdminBD(this);
         SQLiteDatabase base = bd.getWritableDatabase();
-        ArrayList<String> xNewData = new ArrayList<String>();
-       /* Cursor c = bd.consultaFecha(base);
-        int count = c.getCount();
 
-        double[] values = new double[count];
-        String[] fechas = new String[count];
-        int[] colori = new int[count];
-
-        for (int m = 0; m < count; m++) {
-            c.moveToNext();
-            fechas[m] = c.getString(0);
-            values[m] = c.getDouble(1);
-*/
-
-
-            /*for (int i = 0; i < fechas.length; i++) {
-                yVals1.add(new Entry((float) values[i], i));
-            }
-            ArrayList<String> xVals = new ArrayList<String>();//array legend
-
-            for (int i = 0; i < fechas.length; i++) {
-                xVals.add(fechas[m % fechas.length]);
-            }*/
-
-            // undo all highlights
-
-
+        Cursor c = bd.consultaDia(base);
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            xNewData.add(c.getString(c.getColumnIndex("dia")));
         }
-       /* c.close();
-        bd.close();*/
-    //}
+        c.close();
+        return xNewData;
+
+    }
+    public ArrayList <String> obtenerHora(){
+        AdminBD bd = new AdminBD(this);
+        SQLiteDatabase base = bd.getWritableDatabase();
+        Cursor c = bd.consultaHora(base);
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            xNewData.add(c.getString(c.getColumnIndex("hora")));
+        }
+        c.close();
+        return xNewData;
+
+    }
+    public ArrayList <String> obtenerMes() {
+        SQLiteDatabase base = bd.getWritableDatabase();
+        Cursor c = bd.consultaMes(base);
+        for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
+            xNewData.add(c.getString(c.getColumnIndex("mes")));
+        }
+        c.close();
+        return xNewData;
+    }
+    public ArrayList<Float> obtenerLitrosMes(){
+        Cursor cursor = bd.consultaMes(base);
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
+        }
+        cursor.close();
+        return litrosNormales;
+    }
+    public ArrayList<Float> obtenerLitrosDia(){
+        Cursor cursor = bd.consultaDia(base);
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
+        }
+        cursor.close();
+        return litrosNormales;
+    }
+    public ArrayList<Float> obtenerLitrosHora(){
+        Cursor cursor = bd.consultaHora(base);
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
+        }
+        cursor.close();
+        return litrosNormales;
+    }
+
+
+
 
 
     /*public ArrayList<String> queryXData(){
@@ -385,14 +645,14 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         SQLiteDatabase base = bd.getWritableDatabase();
         ArrayList<String> xNewData = new ArrayList<String>();
         Cursor litros = bd.consultaLitros(base);
-        ArrayList<Float> yNewData = new ArrayList<Float>();
+        ArrayList<Float> litrosNormales = new ArrayList<Float>();
         String query = "SELECT " + DAILY_TOTAL + " FROM " + TABLE_DAILY_FRAG;
         Cursor cursor = mSQLiteDatabase.rawQuery(query, null);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            yNewData.add(cursor.getFloat(cursor.getColumnIndex(DAILY_TOTAL)));
+            litrosNormales.add(cursor.getFloat(cursor.getColumnIndex(DAILY_TOTAL)));
         }
         cursor.close();
-        return yNewData;
+        return litrosNormales;
     }*/
 
     @Override

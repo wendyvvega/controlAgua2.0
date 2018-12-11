@@ -16,13 +16,15 @@ public class AdminBD extends SQLiteOpenHelper{
         final static String campo_litros_consumidos = "litros_consumidos";
     final static String campo_modo = "modo"; //MANUAL O AUTOMATICO
     final static String campo_caudal = "caudal";
-    final static String crear_tabla = "CREATE TABLE "+tb_nombre+" ("+campo_id+" INTEGER PRIMARY KEY AUTOINCREMENT, "
-            +campo_fecha+" TIMESTAMP, "+campo_litros_consumidos+" TEXT, "+campo_modo+" TEXT, "+campo_caudal+" TEXT);";
-    final static String consulta_litros= "SELECT campo_Litros_consumidos FROM "+tb_nombre+";";
-    final static String consulta_hora= "SELECT strftime('%H',campo_fecha)hour, AVG(campo_litros) FROM "+tb_nombre+" GROUP BY strftime ('%H',campo_fecha);";
+    final static String crear_tabla = "CREATE TABLE IF NOT EXISTS "+tb_nombre+" ("+campo_id+" INTEGER PRIMARY KEY AUTOINCREMENT, "
+            +campo_fecha+" TIMESTAMP  DEFAULT (CURRENT_TIMESTAMP) NOT NULL ON CONFLICT REPLACE, "+campo_litros_consumidos+" FLOAT NOT NULL, "+campo_modo+" TEXT NOT NULL, "+campo_caudal+" TEXT);";
+    final static String consulta_litros= "SELECT printf(\"%.2f\",(AVG(litros_consumidos))) AS Litro FROM "+tb_nombre+";";
+    final static String consulta_galones= "SELECT printf(\"%.2f\",(AVG(litros_consumidos)/3.785)) AS Galon From "+tb_nombre+";";
+    final static String consulta_mc= "SELECT printf(\"%.2f\",(AVG(litros_consumidos)/1000)) AS MetroCubico  "+tb_nombre+";";
+    final static String consulta_hora= "SELECT strftime('%H',DATETIME(campo_fecha,'localtime'))hora,printf(\"%.2f\",(AVG(litros_consumidos))) as Litro FROM "+tb_nombre+" GROUP BY strftime ('%H',campo_fecha);";
 
-    final static String consulta_mes= "SELECT strftime('%m',campo_fecha)hour, AVG(campo_litros) FROM "+tb_nombre+" GROUP BY strftime ('%m',campo_fecha);";
-    final static String consulta_dia= "SELECT strftime('%d',campo_fecha)hour, AVG(campo_litros) FROM "+tb_nombre+" GROUP BY strftime ('%d',campo_fecha);";
+    final static String consulta_mes= "SELECT strftime('%m',DATETIME(campo_fecha,'localtime'))mes, printf(\"%.2f\",(AVG(litros_consumidos))) as Litro FROM "+tb_nombre+" GROUP BY strftime ('%m',campo_fecha);";
+    final static String consulta_dia= "SELECT strftime('%d',DATETIME(campo_fecha,'localtime'))dia, printf(\"%.2f\",(AVG(litros_consumidos))) as Litro FROM "+tb_nombre+" GROUP BY strftime ('%d',campo_fecha);";
 
 
     final static String consulta_tabla = "SELECT * FROM "+tb_nombre+";";
@@ -60,13 +62,19 @@ public class AdminBD extends SQLiteOpenHelper{
         Cursor cursorLitros = bd.rawQuery(consulta_mes,null);
         return cursorLitros;
     }
-    public static Cursor consultaDia(SQLiteDatabase bd){
+    public  Cursor consultaDia(SQLiteDatabase bd){
         Cursor cursorLitros = bd.rawQuery(consulta_dia,null);
         return cursorLitros;
     }
 
+    public Cursor consultarLitos (SQLiteDatabase bd){
+        Cursor c = bd.rawQuery(consulta_litros,null);
+        return c;
 
-    public static Cursor consultaHora(SQLiteDatabase bd){
+    }
+
+
+    public  Cursor consultaHora(SQLiteDatabase bd){
         Cursor cursorFecha = bd.rawQuery(consulta_hora,null);
                 return cursorFecha;
     }
