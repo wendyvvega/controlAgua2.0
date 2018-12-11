@@ -1,1 +1,2 @@
-# controlAgua2.0
+# ControlDeAgua
+Aplicación de control del flujo de agua

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:enterFadeDuration="@android:integer/config_shortAnimTime"
+    android:exitFadeDuration="@android:integer/config_mediumAnimTime">
+
+    <item
+        android:state_checked="true"
+        android:drawable="@drawable/boton_on"/>
+
+    <item
+        android:state_checked="false"
+        android:drawable="@drawable/boton_off"/>
+</selector>

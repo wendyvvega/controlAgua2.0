@@ -1,0 +1,110 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Fondo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="5dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="5dp"
+    tools:context="com.example.edmol.webview.control">
+
+
+    <TextView
+        android:id="@+id/tvParametros"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Establezca la cantidad de agua que desea usar:"
+        android:textColor="@color/colorTexto"
+        android:textSize="25dp" />
+
+    <RadioGroup
+        android:id="@+id/rgMedidas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvParametros"
+        android:layout_alignStart="@+id/tvParametros"
+        android:layout_marginTop="36dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rbLitros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:checked="true"
+            android:text="Litros"
+            android:textColor="@color/colorTexto"
+            android:textSize="25dp" />
+
+        <RadioButton
+            android:id="@+id/rbGalones"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Galones"
+            android:textColor="@color/colorTexto"
+            android:textSize="25dp" />
+
+        <RadioButton
+            android:id="@+id/rbCubicos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Cubicos"
+            android:textColor="@color/colorTexto"
+            android:textSize="25dp" />
+    </RadioGroup>
+
+    <RelativeLayout
+        android:id="@+id/rlBarras"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvParametros"
+        android:layout_marginTop="0dp">
+
+        <EditText
+            android:id="@+id/etAgua"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:hint="Cantidad"
+            android:gravity="center"
+            android:inputType="numberDecimal"
+            android:visibility="visible" />
+
+        <!--<com.michaelmuenzer.android.scrollablennumberpicker.ScrollableNumberPicker
+            android:id="@+id/snpNumeracionLitros"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:nextFocusRight="@id/rbLitros"
+            android:background="@drawable/custom_numero"
+            app:snp_buttonIconLeft="@drawable/ic_left"
+            app:snp_buttonIconRight="@drawable/ic_right"
+            app:snp_maxValue="100"
+            app:snp_minValue="0"
+            app:snp_orientation="horizontal"
+            app:snp_stepSize="1"
+            app:snp_updateInterval="1"
+            app:snp_value="1"
+            app:snp_valueMarginEnd="8dp"
+            app:snp_valueMarginStart="8dp" />-->
+    </RelativeLayout>
+
+    <ToggleButton
+        android:id="@+id/botonPrender2"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_below="@id/rgMedidas"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/custom_manual"
+        android:text=""
+        android:textOff=""
+        android:textOn="" />
+</RelativeLayout>

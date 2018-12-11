@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Fondo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="5dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="5dp"
+    tools:context="com.example.edmol.webview.ajustes">
+
+    <RelativeLayout
+        android:id="@+id/barraFondo"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtFondo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:text="Fondo:"
+            android:textColor="@color/colorTexto"
+            android:textSize="24dp" />
+
+        <Spinner
+            android:id="@+id/spinnerColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="37dp"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@id/txtFondo" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/barraTamano"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_below="@id/barraFondo"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtTamano"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:text="Tamaño:"
+            android:textColor="@color/colorTexto"
+            android:textSize="24dp" />
+
+        <Spinner
+            android:id="@+id/spinnerTamano"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@+id/txtTamano" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/txtControl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/barraTamano"
+        android:layout_marginTop="50dp"
+        android:text="Prueba de cambio de tamaño en letra"
+        android:textColor="@color/colorTexto"
+        android:textSize="25sp" />
+
+    <Button
+        android:id="@+id/btnGuardar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
+        android:background="@drawable/guardar"/>
+</RelativeLayout>

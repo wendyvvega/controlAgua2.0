@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Fondo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.example.edmol.webview.control">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/appbar_padding_top"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_text_1" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_text_2" />
+
+        </android.support.design.widget.TabLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <RelativeLayout
+        android:id="@+id/barraProgeso"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/container"
+        android:layout_marginTop="300dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <ImageView
+            android:id="@+id/imgMedidor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/medidor" />
+
+        <ProgressBar
+            android:id="@+id/pbProgreso"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tvCargaCompleta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/pbProgreso"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
+            android:text="Carga Completa"
+            android:textSize="24sp"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/txtFlujo"
+            android:layout_width="185dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvCargaCompleta"
+            android:layout_alignStart="@+id/tvCargaCompleta"
+            android:layout_marginTop="78dp"
+            android:gravity="right"
+            android:text=""
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/txtCantidad"
+            android:layout_width="135dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtFlujo"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="117dp"
+            android:background="@color/black"
+            android:gravity="right"
+            android:text=""
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <ToggleButton
+            android:id="@+id/botonPrender3"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_below="@id/rgMedidas"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/custom_manual"
+            android:text=""
+            android:textOff=""
+            android:textOn="" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
