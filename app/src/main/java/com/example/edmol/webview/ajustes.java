@@ -175,9 +175,9 @@ public class ajustes extends AppCompatActivity {
 
     private void colorList() {
         mColoresList = new ArrayList<>();
-        mColoresList.add(new coloresItem("Naranja", R.drawable.paleta_colores));
         mColoresList.add(new coloresItem("Azul", R.drawable.paleta_colores));
-        mColoresList.add(new coloresItem("Café", R.drawable.paleta_colores));
+        mColoresList.add(new coloresItem("Verde", R.drawable.paleta_colores));
+        mColoresList.add(new coloresItem("Ambar", R.drawable.paleta_colores));
         mColoresList.add(new coloresItem("Gris", R.drawable.paleta_colores));
     }
 

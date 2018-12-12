@@ -5,9 +5,9 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorTexto">#000000</color>
 
-    <color name="colorFondo1">#FFA07A</color>
-    <color name="colorFondo2">#87CEFA</color>
-    <color name="colorFondo3">#DEB887</color>
-    <color name="colorFondo4">#708090</color>
+    <color name="colorFondo1">#B3E5FC</color>
+    <color name="colorFondo2">#DCEDC8</color>
+    <color name="colorFondo3">#FFECB3</color>
+    <color name="colorFondo4">#607D8B</color>
     <color name="colorFondo5">#9966CC</color>
 </resources>
