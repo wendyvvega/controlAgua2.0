@@ -5,10 +5,10 @@
 
     <item
         android:state_checked="true"
-        android:drawable="@drawable/auto_mood"/>
+        android:drawable="@drawable/manual_mood"/>
 
     <item
         android:state_checked="false"
-        android:drawable="@drawable/manual_mood"/>
+        android:drawable="@drawable/auto_mood"/>
 
 </selector>
