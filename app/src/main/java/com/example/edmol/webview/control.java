@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -31,24 +32,17 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 public class control extends AppCompatActivity {
-
-    CoordinatorLayout display2;
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
-    private ProgressBar mProgressBar;
-    private TextView mCargaTexto;
-    private int mProgressStatus = 0;
-    private Handler mHandler = new Handler();
-
+    RelativeLayout display2, auto_mood, manual_mood;
     TextView aguaTotal;
     TextView flujoAgua;
+    ToggleButton btnModo;
 
     //variables para la conexion
     Handler bluetoothIn;
     EditText velocidad;
     ToggleButton botonPrender3;
 
-    final int handlerState = 0;        				 //used to identify handler message
+    final int handlerState = 0;                         //used to identify handler message
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private StringBuilder recDataString = new StringBuilder();
@@ -64,11 +58,12 @@ public class control extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
 
-        display2 = (CoordinatorLayout) findViewById(R.id.Fondo);
-        mProgressBar = (ProgressBar) findViewById(R.id.pbProgreso);
-        mCargaTexto = (TextView) findViewById(R.id.tvCargaCompleta);
+        display2 = (RelativeLayout) findViewById(R.id.Fondo);
+        auto_mood = (RelativeLayout) findViewById(R.id.rlAutomatico);
+        manual_mood = (RelativeLayout) findViewById(R.id.rlManual);
         aguaTotal = (TextView) findViewById(R.id.txtCantidad);
         flujoAgua = (TextView) findViewById(R.id.txtFlujo);
+        btnModo = (ToggleButton) findViewById(R.id.btnMood);
         botonPrender3 = (ToggleButton) findViewById(R.id.botonPrender3);
 
         String fondoActual;
@@ -91,52 +86,33 @@ public class control extends AppCompatActivity {
                 break;
         }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (mProgressStatus < 100){
-                    mProgressStatus++;
-                    android.os.SystemClock.sleep(100);
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mProgressBar.setProgress(mProgressStatus);
-                        }
-                    });
+        btnModo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    auto_mood.setVisibility(CompoundButton.VISIBLE);
+                    manual_mood.setVisibility(CompoundButton.INVISIBLE);
+                } else {
+                    manual_mood.setVisibility(CompoundButton.VISIBLE);
+                    auto_mood.setVisibility(CompoundButton.INVISIBLE);
                 }
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCargaTexto.setVisibility(View.INVISIBLE);
-                    }
-                });
             }
-        }).start();
+        });
 
-        //mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        //mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
-        //codigo de conexion
+//codigo de conexion
         bluetoothIn = new Handler() {
             public void handleMessage(android.os.Message msg) {
-                if (msg.what == handlerState) {										//if message is what we want
+                if (msg.what == handlerState) {                                        //if message is what we want
                     String readMessage = (String) msg.obj;                                                                // msg.arg1 = bytes from connect thread
-                    recDataString.append(readMessage);      								//keep appending to string until ~
+                    recDataString.append(readMessage);                                    //keep appending to string until ~
                     int endOfLineIndex = recDataString.indexOf("~");                    // determine the end-of-line
                     if (endOfLineIndex > 0) {                                           // make sure there data before ~
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);    // extract string
                         //flujoAgua.setText("Datos recibidos = " + dataInPrint);
-                        int dataLength = dataInPrint.length();							//get length of data received
+                        int dataLength = dataInPrint.length();                            //get length of data received
                         //txtStringLength.setText("Tamaño del String = " + String.valueOf(dataLength));
-                        String []datos = dataInPrint.split("\\+");
+                        String[] datos = dataInPrint.split("\\+");
 
-                        if (recDataString.charAt(0) == '#')								//if it starts with # we know it is what we are looking for
+                        if (recDataString.charAt(0) == '#')                                //if it starts with # we know it is what we are looking for
                         {
                             //separa el string recibido
                             String valor0 = recDataString.substring(1, 5);             //get sensor value from string between indices 1-5
@@ -157,7 +133,7 @@ public class control extends AppCompatActivity {
                             //sensorView3.setText(" Sensor 3 Voltage = " + sensor3 + "V");
                             */
                         }
-                        recDataString.delete(0, recDataString.length()); 					//clear all string data
+                        recDataString.delete(0, recDataString.length());                    //clear all string data
                         // strIncom =" ";
                         dataInPrint = " ";
                     }
@@ -208,7 +184,7 @@ public class control extends AppCompatActivity {
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
 
-        return  device.createRfcommSocketToServiceRecord(BTMODULEUUID);
+        return device.createRfcommSocketToServiceRecord(BTMODULEUUID);
         //creates secure outgoing connecetion with BT device using UUID
     }
 
@@ -225,15 +201,12 @@ public class control extends AppCompatActivity {
             Toast.makeText(this, "La creacción del Socket fallo", Toast.LENGTH_LONG).show();
         }
         // Establish the Bluetooth socket connection.
-        try
-        {
+        try {
             btSocket.connect();
         } catch (IOException e) {
-            try
-            {
+            try {
                 btSocket.close();
-            } catch (IOException e2)
-            {
+            } catch (IOException e2) {
                 //insert code to deal with this
             }
         }
@@ -246,11 +219,9 @@ public class control extends AppCompatActivity {
     }
 
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
-        try
-        {
+        try {
             //Don't leave Bluetooth sockets open when leaving activity
             btSocket.close();
         } catch (IOException e2) {
@@ -261,7 +232,7 @@ public class control extends AppCompatActivity {
     //Checks that the Android device Bluetooth is available and prompts to be turned on if off
     private void checkBTState() {
 
-        if(btAdapter==null) {
+        if (btAdapter == null) {
             Toast.makeText(this, "El dispositivo no soporta bluetooth", Toast.LENGTH_LONG).show();
         } else {
             if (btAdapter.isEnabled()) {
@@ -294,24 +265,24 @@ public class control extends AppCompatActivity {
         }
 
 
-                public void run() {
-                    byte[] buffer = new byte[256];
-                    int bytes;
+        public void run() {
+            byte[] buffer = new byte[256];
+            int bytes;
 
-                    // Keep looping to listen for received messages
-                    while (true) {
-                        try {
-                            bytes = mmInStream.read(buffer);            //read bytes from input buffer
-                            String readMessage = new String(buffer, 0, bytes);
-                            // Send the obtained bytes to the UI Activity via handler
-                            bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
-                        } catch (IOException e) {
-                            break;
-                        }
-                    }
+            // Keep looping to listen for received messages
+            while (true) {
+                try {
+                    bytes = mmInStream.read(buffer);            //read bytes from input buffer
+                    String readMessage = new String(buffer, 0, bytes);
+                    // Send the obtained bytes to the UI Activity via handler
+                    bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+                } catch (IOException e) {
+                    break;
                 }
+            }
+        }
 
-//write method
+        //write method
         public void write(String input) {
             byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
             try {
@@ -319,7 +290,7 @@ public class control extends AppCompatActivity {
             } catch (IOException e) {
                 //if you cannot write, close the application
                 Toast.makeText(control.this, "La Conexión fallo", Toast.LENGTH_LONG).show();
-                 finish();
+                finish();
             }
         }
     }
