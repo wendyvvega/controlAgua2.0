@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.app.Fragment;
@@ -15,6 +17,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,17 +35,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class control extends AppCompatActivity {
+public class control extends AppCompatActivity implements TextWatcher {
     RelativeLayout display2, auto_mood, manual_mood;
     TextView aguaTotal;
     TextView flujoAgua;
     ToggleButton btnModo;
+    String txtCantidad;
 
     //variables para la conexion
     Handler bluetoothIn;
-    EditText velocidad;
-    ToggleButton botonPrender3;
-
+    EditText cantidad;
+    ToggleButton botonPrender3, botonManual;
     final int handlerState = 0;                         //used to identify handler message
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
@@ -57,7 +61,8 @@ public class control extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
-
+        cantidad = findViewById(R.id.etAgua);
+        botonManual = findViewById(R.id.botonPrender);
         display2 = (RelativeLayout) findViewById(R.id.Fondo);
         auto_mood = (RelativeLayout) findViewById(R.id.rlAutomatico);
         manual_mood = (RelativeLayout) findViewById(R.id.rlManual);
@@ -65,6 +70,8 @@ public class control extends AppCompatActivity {
         flujoAgua = (TextView) findViewById(R.id.txtFlujo);
         btnModo = (ToggleButton) findViewById(R.id.btnMood);
         botonPrender3 = (ToggleButton) findViewById(R.id.botonPrender3);
+
+        aguaTotal.addTextChangedListener(this);
 
         String fondoActual;
         fondoActual = getIntent().getExtras().getString("fondoActual");
@@ -143,17 +150,55 @@ public class control extends AppCompatActivity {
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();       // get Bluetooth adapter
         checkBTState();
-
-        botonPrender3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mConnectedThread.write("o"); //manda x cuando se prende
-                    //mConnectedThread.write(agua.getText().toString()); //manda cantidad de agua
-                } else {
-                    mConnectedThread.write("x"); //manda o cuando se apaga
+        botonManual.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(!b){
+                    mConnectedThread.write("x");
+                }else{
+                    mConnectedThread.write("o");
                 }
             }
         });
+
+        botonPrender3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                txtCantidad = cantidad.getText().toString();
+                if (!isChecked) {
+                    cantidad.setEnabled(true);
+                    mConnectedThread.write("x");
+                    }
+
+                    else {
+                    if(btnModo.isChecked() && txtCantidad.length()==0){
+                        botonPrender3.setChecked(false);
+                        AlertDialog alertDialog = new AlertDialog.Builder(control.this).create();
+                        alertDialog.setTitle("Alerta");
+                        alertDialog.setMessage("Introduce una cantidad para comenzar la medición ");
+                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        alertDialog.show();
+                    }else{
+                        mConnectedThread.write("o");
+                        cantidad.setEnabled(false);
+
+                    }
+
+
+                    //manda x cuando se prende
+                    //mConnectedThread.write(agua.getText().toString()); //manda cantidad de agua
+                }
+                    //manda o cuando se apaga
+
+            }
+        });
+
+
+
 
         //EJEMPLO DE APAGAR, ENCENDER Y MANDAR VALOR AL ARDUINO
         /*// Set up onClick listeners for buttons to send 1 or 0 to turn on/off LED
@@ -180,6 +225,9 @@ public class control extends AppCompatActivity {
 
             }
         });*/
+    }
+    private void parar( ){
+
     }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
@@ -241,6 +289,30 @@ public class control extends AppCompatActivity {
                 startActivityForResult(enableBtIntent, 1);
             }
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        txtCantidad = cantidad.getText().toString();
+        if (txtCantidad.isEmpty()) {
+
+        } else {
+            if (Float.parseFloat(charSequence.toString()) >= Float.parseFloat(txtCantidad)) {
+                cantidad.setEnabled(true);
+                mConnectedThread.write("x");
+                botonPrender3.setChecked(false);
+            }
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+
     }
 
     //create new class for connect thread
