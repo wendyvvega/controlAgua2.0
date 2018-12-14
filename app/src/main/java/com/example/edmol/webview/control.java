@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
@@ -34,6 +35,9 @@ import android.widget.ToggleButton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 public class control extends AppCompatActivity implements TextWatcher {
@@ -77,6 +81,7 @@ public class control extends AppCompatActivity implements TextWatcher {
         rbGalones = (RadioButton) findViewById(R.id.rbGalones);
 
         aguaTotal.addTextChangedListener(this);
+        final AdminBD bd = new AdminBD(this);
 
         String fondoActual;
         fondoActual = getIntent().getExtras().getString("fondoActual");
@@ -160,6 +165,13 @@ public class control extends AppCompatActivity implements TextWatcher {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(!b){
                     mConnectedThread.write("x");
+                    //INSERTAR BD MANUAL
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+                    Date date = new Date();
+                    String fecha = dateFormat.format(date);
+                    String txtCaudal = flujoAgua.getText().toString();
+                    SQLiteDatabase basedatos = bd.getWritableDatabase();
+                    bd.insertarRegistro(basedatos,fecha,txtCantidad,"manual",txtCaudal);
                 }else{
                     mConnectedThread.write("o");
                 }
@@ -172,6 +184,13 @@ public class control extends AppCompatActivity implements TextWatcher {
                 if (!isChecked) {
                     cantidad.setEnabled(true);
                     mConnectedThread.write("x");
+                    //INSERTAR BD AUTOMATICO
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+                    Date date = new Date();
+                    String fecha = dateFormat.format(date);
+                    String txtCaudal = flujoAgua.getText().toString();
+                    SQLiteDatabase basedatos = bd.getWritableDatabase();
+                    bd.insertarRegistro(basedatos,fecha,txtCantidad,"automatico",txtCaudal);
                 }
 
                 else {
