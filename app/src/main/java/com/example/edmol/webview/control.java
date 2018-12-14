@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,8 +40,10 @@ public class control extends AppCompatActivity implements TextWatcher {
     RelativeLayout display2, auto_mood, manual_mood;
     TextView aguaTotal;
     TextView flujoAgua;
+    TextView equivalencia;
     ToggleButton btnModo;
     String txtCantidad;
+    RadioButton rbGalones;
 
     //variables para la conexion
     Handler bluetoothIn;
@@ -70,6 +73,8 @@ public class control extends AppCompatActivity implements TextWatcher {
         flujoAgua = (TextView) findViewById(R.id.txtFlujo);
         btnModo = (ToggleButton) findViewById(R.id.btnMood);
         botonPrender3 = (ToggleButton) findViewById(R.id.botonPrender3);
+        equivalencia = (TextView) findViewById(R.id.txtEqui);
+        rbGalones = (RadioButton) findViewById(R.id.rbGalones);
 
         aguaTotal.addTextChangedListener(this);
 
@@ -185,6 +190,12 @@ public class control extends AppCompatActivity implements TextWatcher {
                     }else{
                         mConnectedThread.write("o");
                         cantidad.setEnabled(false);
+                        if(rbGalones.isChecked()){
+                            String s = cantidad.getText().toString();
+                            Float galones = Float.parseFloat(s);
+                            double litros = galones * 3.78;
+                            equivalencia.setText("Equivale a "+Double.toString(litros)+" litros");
+                        }
 
                     }
 
