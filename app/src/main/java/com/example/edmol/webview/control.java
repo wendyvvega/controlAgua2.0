@@ -47,7 +47,7 @@ public class control extends AppCompatActivity implements TextWatcher {
     TextView equivalencia;
     ToggleButton btnModo;
     String txtCantidad;
-    RadioButton rbGalones;
+    RadioButton rbGalones,rMC;
 
     //variables para la conexion
     Handler bluetoothIn;
@@ -57,7 +57,7 @@ public class control extends AppCompatActivity implements TextWatcher {
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private StringBuilder recDataString = new StringBuilder();
-
+    final AdminBD bd = new AdminBD(this);
     private ConnectedThread mConnectedThread;
 
     // SPP UUID service - this should work for most devices
@@ -79,9 +79,10 @@ public class control extends AppCompatActivity implements TextWatcher {
         botonPrender3 = (ToggleButton) findViewById(R.id.botonPrender3);
         equivalencia = (TextView) findViewById(R.id.txtEqui);
         rbGalones = (RadioButton) findViewById(R.id.rbGalones);
+        rMC = findViewById(R.id.rbCubicos);
 
         aguaTotal.addTextChangedListener(this);
-        final AdminBD bd = new AdminBD(this);
+
 
         String fondoActual;
         fondoActual = getIntent().getExtras().getString("fondoActual");
@@ -166,12 +167,13 @@ public class control extends AppCompatActivity implements TextWatcher {
                 if(!b){
                     mConnectedThread.write("x");
                     //INSERTAR BD MANUAL
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+                    if(!txtCantidad.isEmpty()) {
+                   SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
                     Date date = new Date();
                     String fecha = dateFormat.format(date);
                     String txtCaudal = flujoAgua.getText().toString();
                     SQLiteDatabase basedatos = bd.getWritableDatabase();
-                    bd.insertarRegistro(basedatos,fecha,txtCantidad,"manual",txtCaudal);
+                    bd.insertarRegistro(basedatos,fecha,Float.parseFloat(txtCantidad),"manual",txtCaudal);}
                 }else{
                     mConnectedThread.write("o");
                 }
@@ -185,16 +187,18 @@ public class control extends AppCompatActivity implements TextWatcher {
                     cantidad.setEnabled(true);
                     mConnectedThread.write("x");
                     //INSERTAR BD AUTOMATICO
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
-                    Date date = new Date();
-                    String fecha = dateFormat.format(date);
-                    String txtCaudal = flujoAgua.getText().toString();
-                    SQLiteDatabase basedatos = bd.getWritableDatabase();
-                    bd.insertarRegistro(basedatos,fecha,txtCantidad,"automatico",txtCaudal);
+                    if(!txtCantidad.isEmpty()) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+                        Date date = new Date();
+                        String fecha = dateFormat.format(date);
+                        String txtCaudal = flujoAgua.getText().toString();
+                        SQLiteDatabase basedatos = bd.getWritableDatabase();
+                        bd.insertarRegistro(basedatos, fecha, Float.parseFloat(txtCantidad), "automatico", txtCaudal);
+                    }
                 }
 
                 else {
-                    if(btnModo.isChecked() && txtCantidad.length()==0){
+                    if( txtCantidad.isEmpty()){
                         botonPrender3.setChecked(false);
                         AlertDialog alertDialog = new AlertDialog.Builder(control.this).create();
                         alertDialog.setTitle("Alerta");
@@ -212,8 +216,15 @@ public class control extends AppCompatActivity implements TextWatcher {
                         if(rbGalones.isChecked()){
                             String s = cantidad.getText().toString();
                             Float galones = Float.parseFloat(s);
-                            double litros = galones * 3.78;
+                            double litros = galones / 3.78;
                             equivalencia.setText("Equivale a "+Double.toString(litros)+" litros");
+                        }else{
+                            if(rMC.isChecked()){
+                                String s = cantidad.getText().toString();
+                                Float mC = Float.parseFloat(s);
+                                double litros = mC / 1000;
+                                equivalencia.setText("Equivale a "+Double.toString(litros)+" litros");
+                            }
                         }
 
                     }
@@ -336,6 +347,12 @@ public class control extends AppCompatActivity implements TextWatcher {
                 cantidad.setEnabled(true);
                 mConnectedThread.write("x");
                 botonPrender3.setChecked(false);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
+                Date date = new Date();
+                String fecha = dateFormat.format(date);
+                String txtCaudal = flujoAgua.getText().toString();
+                SQLiteDatabase basedatos = bd.getWritableDatabase();
+                bd.insertarRegistro(basedatos,fecha,Float.parseFloat(txtCantidad),"automatico",txtCaudal);
             }
         }
     }

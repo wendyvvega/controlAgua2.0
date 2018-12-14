@@ -12,6 +12,7 @@ import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
@@ -62,9 +63,20 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
     private ArrayList<Entry> entradaLinea = new ArrayList<>();
     private ArrayList<Entry> entradaLineaGalon = new ArrayList<>();
     private ArrayList<Entry> entradaLineaMc = new ArrayList<>();
-
+    private RadioButton rMes,rDia,rHora,rLitro,rGalon,rMC;
+public void limpiarArreglos(){
+    xVals.clear();
+    litrosNormales.clear();
+    datosGalones.clear();
+    datosMc.clear();
+    entradaLinea.clear();
+    entradaBarraLitros.clear();
+    entradaLineaGalon.clear();
+    entradaLineaMc.clear();
+    entradaBarraGalon.clear();
+    entradaBarraMc.clear();
+}
     private  AdminBD bd = new AdminBD(this);
-    private SQLiteDatabase base = bd.getWritableDatabase();
     final String[] meses = new String[] { "Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dec"};
     int seleccion;
     @Override
@@ -79,28 +91,21 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         super.onCreate(savedInstanceState);
         rl = findViewById(R.id.layoutChart);
         setContentView(R.layout.activity_web_view);
-        spFecha= findViewById(R.id.spFecha);
-        spLitros = findViewById(R.id.spLitros);
+        rMes= findViewById(R.id.rMes);
+        rDia = findViewById(R.id.rDia);
+        rHora=findViewById(R.id.rHora);
+        rLitro = findViewById(R.id.rLitro);
+        rGalon=findViewById(R.id.rGalon);
+        rMC=findViewById(R.id.rMC);
+
         spTgraf = findViewById(R.id.spTChart);
         flecha = findViewById(R.id.flechaAtr);
         flecha.setOnClickListener(this);
-        seleccion= spLitros.getSelectedItemPosition();
         barraH = findViewById(R.id.barChart);
         chart = findViewById(R.id.lineChart);
 
-
-        ArrayAdapter <CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.txtFechas,          android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spFecha.setAdapter(adapter);
-        spFecha.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-
-        ArrayAdapter <CharSequence> adapter1 = ArrayAdapter.createFromResource(this, R.array.txtLitros,          android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spLitros.setAdapter(adapter1);
-        spLitros.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-
         ArrayAdapter <CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.txtTGraf,          android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTgraf.setAdapter(adapter2);
         spTgraf.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
 
@@ -111,6 +116,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
         BarChart barra = new BarChart(this);
         barra.setOnChartGestureListener(com.example.edmol.webview.webView.this);
+
         barra.setOnChartValueSelectedListener(com.example.edmol.webview.webView.this);
         barra.setDragEnabled(true);
         barra.setScaleEnabled(true);
@@ -131,7 +137,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
     public void grafLinea(int ln){
       
         Description desc = new Description();
-        desc.setText("Gasto de agua");
+        desc.setText("Gasto de agua en promedio");
         chart.setDescription(desc);
         chart.setOnChartGestureListener(com.example.edmol.webview.webView.this);
         chart.setOnChartValueSelectedListener(com.example.edmol.webview.webView.this);
@@ -153,39 +159,72 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
     }
     public void mostrarLineaMes(){
-       chart.clear();
-       
-        for (int i = 0; i < obtenerLitrosMes().size(); i++) {
-            entradaLinea.add(new Entry(i, obtenerLitrosMes().get(i)));
-            xVals.add(obtenerMes().get(i));
+
+        obtenerMes();
+        obtenerLitrosMes();
+        ListIterator <Float> k= litrosNormales.listIterator();
+        ListIterator <String>s = xNewData.listIterator();
+        Float h=0f;
+        String l="";
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaLinea.add(new Entry(k.nextIndex(),h));
         }
-        cfgLinea(entradaLinea);
+        while(s.hasNext()){
+            l=s.next();
+            xVals.add(l);
+        }
+
+
         cfgLineaFecha(xVals);
+
 
     }
 
     public void mostrarLineaDia(){
-        chart.clear();
-       
 
-        for (int i = 0; i < obtenerLitrosDia().size(); i++) {
-            entradaLinea.add(new Entry(i, obtenerLitrosDia().get(i)));
-            xVals.add(obtenerDia().get(i));
+        obtenerDia();
+        obtenerLitrosDia();
+        ListIterator <Float> k= litrosNormales.listIterator();
+        ListIterator <String>s = xNewData.listIterator();
+        Float h=0f;
+        String l="";
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaLinea.add(new Entry(k.nextIndex(),h));
         }
-        cfgLinea(entradaLinea);
+        while(s.hasNext()){
+            l=s.next();
+            xVals.add(l);
+        }
+
+
         cfgLineaFecha(xVals);
-        //Inicializar e introducir datos
+
 
 
     }
     public void mostrarLineaHora(){
-        chart.clear();
 
-        for (int i = 0; i < obtenerLitrosHora().size(); i++) {
-            entradaLinea.add(new Entry(i, obtenerLitrosHora().get(i)));
-            xVals.add(obtenerHora().get(i));
+        obtenerHora();
+        obtenerLitrosHora();
+        ListIterator <Float> k= litrosNormales.listIterator();
+        ListIterator <String>s = xNewData.listIterator();
+        Float h=0f;
+        String l="";
+
+        while(k.hasNext()){
+            h =  k.next();
+            entradaLinea.add(new Entry(k.nextIndex(),h));
         }
-        cfgLinea(entradaLinea);
+        while(s.hasNext()){
+            l=s.next();
+            xVals.add(l);
+        }
+
+
         cfgLineaFecha(xVals);
 
     }
@@ -212,7 +251,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
     public void cfgLinea( final ArrayList <Entry> entrada){
 
-        dataSetL = new LineDataSet(entrada,"Visualiza el consumo de agua");
+        dataSetL = new LineDataSet(entrada,"Agua gastada en promedio");
         dataSetL.setHighlightEnabled(true); // allow highlighting for DataSet
         // set this to false to disable the drawing of highlight indicator (lines)
         dataSetL.setDrawHighlightIndicators(true);
@@ -237,7 +276,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
        
 
         Description desc = new Description();
-        desc.setText("Gasto de agua");
+        desc.setText("Gasto de agua en promedio");
         barraH.setDescription(desc);
         //Opciones de interacción
         barraH.setOnChartValueSelectedListener(com.example.edmol.webview.webView.this);
@@ -272,7 +311,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 /*************************************Convertir de litros a **************************************************************************/
     public ArrayList<Float> litroGalon(){
 
-        chart.clearValues();
+
             ListIterator <Float> k= litrosNormales.listIterator();
             Float h=0f;
             while(k.hasNext()){
@@ -286,7 +325,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
 
     public ArrayList<Float> litrosMc(){
-        chart.clearValues();
+
         ListIterator <Float> k= litrosNormales.listIterator();
         Float h=0f;
 
@@ -328,7 +367,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
         while(k.hasNext()){
             h =  k.next();
-            entradaLineaMc.add(new BarEntry(k.nextIndex(),h/1000f));
+            entradaLineaMc.add(new Entry(k.nextIndex(),h/1000f));
         }
     }
     public void mostrarLitrosGalonBarraLinea(){
@@ -338,7 +377,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
         while(k.hasNext()){
             h =  k.next();
-            entradaLineaGalon.add(new BarEntry(k.nextIndex(),h/3.785f));
+            entradaLineaGalon.add(new Entry(k.nextIndex(),h/3.785f));
         }
     }
 
@@ -349,9 +388,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         // we don't draw numbers, so no decimal digits needed
         /****************************Insertar datos por primera vez Barras**********************************************/
        public void mostrarBarraMes(){
-           if(!barraH.isEmpty()){
-               barraH.clear();
-           }
+
            obtenerMes();
            obtenerLitrosMes();
            ListIterator <Float> k= litrosNormales.listIterator();
@@ -372,10 +409,24 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
            cfgBarraFecha(xVals);
 
        }
+       public void limpiarBarra(){
+           if(!barraH.isEmpty()){
+
+        barraH.clearValues();}
+        barraH.notifyDataSetChanged();
+        barraH.clear();
+        barraH.invalidate();
+    }
+    public void limpiarLinea(){
+           if (!chart.isEmpty()){
+        chart.clearValues();}
+        chart.notifyDataSetChanged();
+        chart.clear();
+        chart.invalidate();
+    }
     public void mostrarBarraDia(){
-        if(!barraH.isEmpty()){
-            barraH.clear();
-        }
+
+
         obtenerDia();
         obtenerLitrosDia();
         ListIterator <Float> k= litrosNormales.listIterator();
@@ -397,9 +448,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
     }
     public void mostrarBarraHora(){
-        if(!barraH.isEmpty()){
-            barraH.clear();
-        }
+
         obtenerHora();
         obtenerLitrosHora();
         ListIterator <Float> k= litrosNormales.listIterator();
@@ -426,7 +475,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
        public void cfgBarra(ArrayList <BarEntry> entradaBarra){
 
            //Inicializar e introducir datos
-           dataSetB = new BarDataSet(entradaBarra,"Agua gastada");
+           dataSetB = new BarDataSet(entradaBarra,"Agua gastada en promedio");
            dataSetB.setColor(Color.rgb(7,169,234));
            dataSetB.setHighLightAlpha(2);
            dataSetB.setHighLightColor(Color.BLACK);
@@ -438,7 +487,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
            BarData data = new BarData(dataSetB);
 
-           data.setBarWidth(0.9f);
+           data.setBarWidth(0.6f);
 
 
            //Meter datos en la gráfica
@@ -490,70 +539,117 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view,int i , long l) {
-        String item = adapterView.getItemAtPosition(i).toString();
+
+        String item = (String) adapterView.getSelectedItem();
 
 
         switch(item){
             case "Lineal":
-                if(chart.getVisibility() == view.VISIBLE || barraH.getVisibility()==view.VISIBLE) {
+
                     chart.setVisibility(View.VISIBLE);
                     barraH.setVisibility(View.GONE);
-                    switch (item) {
-                        case "Mes":
-                            grafLinea(0);
-                            break;
-                        case "Día":
-                            grafLinea(1);
-                            break;
-                        case "Hora(Hoy)":
-                            grafLinea(2);
-                            break;
-                        case "Litros":
-                            cfgLinea(entradaLinea);
-                            break;
-                        case "Galones":
-                            mostrarLitrosGalonBarraLinea();
-                            cfgLinea(entradaLineaGalon);
-                            break;
-                        case "Metros Cúbicos":
-                            mostrarLitrosMcLinea();
-                            cfgLinea(entradaLineaMc);
-                            break;
+                    if(rMes.isChecked()) {
+                        if(!chart.isEmpty()){
+                            limpiarArreglos();
+                            limpiarLinea();
+                           }
+
+                        grafLinea(0);
                     }
-                    break;
+                    if(rDia.isChecked()) {
+                        if(!chart.isEmpty()){
+                            limpiarArreglos();
+                            limpiarLinea();
+                           }
+                        grafLinea(1);
+                    }
+                    if(rHora.isChecked()) {
+                        if(!chart.isEmpty()){
+                            limpiarArreglos();
+                            limpiarLinea();
+                            }
+                        grafLinea(2);
+                    }
+                if(rLitro.isChecked()) {
+                    if(!chart.isEmpty()){
+                        limpiarArreglos();
+                        limpiarLinea();
+                       }
+                    cfgLinea(entradaLinea);
                 }
+                if(rGalon.isChecked()) {
+                    if(!chart.isEmpty()){
+                        limpiarArreglos();
+                        limpiarLinea();
+                        }
+                    mostrarLitrosGalonBarraLinea();
+                    cfgLinea(entradaLineaGalon);
+                }
+                if(rMC.isChecked()) {
+                        if(!chart.isEmpty()){
+                    limpiarArreglos();
+                    limpiarLinea();
+                 }
+                    mostrarLitrosMcLinea();
+                    cfgLinea(entradaLineaMc);
+                }
+
+
             case "Barras-Horizontal":
 
-                if(chart.getVisibility() == view.VISIBLE || barraH.getVisibility()==view.VISIBLE){
+
                      chart.setVisibility(View.GONE);
                     barraH.setVisibility(View.VISIBLE);
-                    switch (item){
-                        case "Mes":
-                            barras(0);
-                            break;
-                        case "Día":
-                            barras(1);
-                            break;
-                        case "Hora(Hoy)":
-                            barras(2);
-                            break;
-                        case "Litros":
-                            cfgBarra(entradaBarraLitros);
-                            break;
-                        case "Galones":
-                            mostrarLitrosGalonBarra();
-                            cfgBarra(entradaBarraGalon);
-                            break;
-                        case "Metros Cúbicos":
-                            mostrarLitrosMc();
-                            cfgBarra(entradaBarraMc);
-                            break;
-                        
+                if(rMes.isChecked()) {
+                    if(!barraH.isEmpty()){
+                    limpiarArreglos();
+                    limpiarBarra();
                     }
+                    barras(0);
+                }
+                if(rDia.isChecked()) {
+                    if(!barraH.isEmpty()){
+                        limpiarArreglos();
+                        limpiarBarra();
+                       }
+                    barras(1);
+                }
+                if(rHora.isChecked()) {
+                    if(!barraH.isEmpty()){
+                        limpiarArreglos();
+                        limpiarBarra();
+                       }
+                    barras(2);
+                }
+                if(rLitro.isChecked()) {
+                    if(!barraH.isEmpty()){
+                        limpiarArreglos();
+                        limpiarBarra();
+                       }
+                    cfgBarra(entradaBarraLitros);
+                }
+                if(rGalon.isChecked()) {
+                    if(!barraH.isEmpty()){
+                        limpiarArreglos();
+                        limpiarBarra();
+                       }
+                    mostrarLitrosGalonBarra();
+                    cfgBarra(entradaBarraGalon);
+                }
+                if(rMC.isChecked()) {
+                    if(!barraH.isEmpty()){
+                        limpiarArreglos();
+                        limpiarBarra();
+                    }
+
+                    mostrarLitrosMc();
+                    cfgBarra(entradaBarraMc);
+                }
+                     break;
                     
-                } break;
+                }
         }
-    }
+
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
@@ -602,6 +698,7 @@ public ArrayList <String> obtenerDia(){
         return xNewData;
     }
     public ArrayList<Float> obtenerLitrosMes(){
+        SQLiteDatabase base = bd.getWritableDatabase();
         Cursor cursor = bd.consultaMes(base);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
@@ -610,6 +707,7 @@ public ArrayList <String> obtenerDia(){
         return litrosNormales;
     }
     public ArrayList<Float> obtenerLitrosDia(){
+        SQLiteDatabase base = bd.getWritableDatabase();
         Cursor cursor = bd.consultaDia(base);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
@@ -618,6 +716,7 @@ public ArrayList <String> obtenerDia(){
         return litrosNormales;
     }
     public ArrayList<Float> obtenerLitrosHora(){
+        SQLiteDatabase base = bd.getWritableDatabase();
         Cursor cursor = bd.consultaHora(base);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));

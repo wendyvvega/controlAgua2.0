@@ -18,9 +18,9 @@
         <item>Hora(Hoy)</item>
     </string-array>
     <string-array name="txtTGraf">
-        <item>Lineal</item>
-        <item>Barras </item>
         <item>Barras-Horizontal</item>
+        <item>Lineal</item>
+
     </string-array>
     <string-array name="txtLitros">
         <item>Litros</item>

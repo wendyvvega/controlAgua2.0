@@ -8,7 +8,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
 
         android:layout_marginBottom="3dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -39,15 +39,14 @@
                     android:id="@+id/imageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="56dp"
-                    android:layout_marginTop="9dp"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="20dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/spFecha"
-                    app:layout_constraintHorizontal_bias="0.51"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="22dp"
+                    app:layout_constraintBottom_toTopOf="@+id/imageView5"
+                    app:layout_constraintEnd_toStartOf="@+id/radioGroup"
+                    app:layout_constraintStart_toEndOf="@+id/filtrar"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_date_range_black_24dp" />
 
                 <ImageView
@@ -56,9 +55,8 @@
                     android:layout_height="33dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="32dp"
-                    android:layout_marginBottom="50dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/textView"
+                    app:layout_constraintEnd_toStartOf="@+id/filtrar"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0"
@@ -68,88 +66,141 @@
                     android:id="@+id/spTChart"
                     android:layout_width="wrap_content"
                     android:layout_height="30dp"
-                    android:layout_marginStart="28dp"
-                    android:layout_marginTop="50dp"
-                    android:layout_marginEnd="264dp"
-                    android:layout_marginBottom="19dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="70dp"
+                    android:layout_marginBottom="26dp"
                     android:entries="@array/txtTGraf"
+                    android:gravity="center_vertical|center"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/imageView5"
                     app:layout_constraintStart_toEndOf="@+id/imageView3"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
+                    app:layout_constraintTop_toBottomOf="@+id/flechaAtr"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
                     android:id="@+id/imageView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="41dp"
-                    android:layout_marginTop="52dp"
-                    android:layout_marginBottom="23dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginBottom="38dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/spTChart"
-                    app:layout_constraintStart_toEndOf="@+id/spFecha"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/flechaAtr"
+                    app:layout_constraintVertical_bias="0.56"
                     app:srcCompat="@drawable/ic_pie_chart_settings" />
 
-                <Spinner
-                    android:id="@+id/spFecha"
-                    android:layout_width="120dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="9dp"
-                    android:layout_marginBottom="20dp"
-                    android:entries="@array/txtFechas"
-                    android:gravity="left"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imageView3"
-                    app:layout_constraintStart_toEndOf="@+id/imageView"
-                    app:layout_constraintTop_toBottomOf="@+id/textView"
-                    app:layout_constraintVertical_bias="0.647" />
-
                 <TextView
-                    android:id="@+id/textView"
+                    android:id="@+id/filtrar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="350dp"
+                    android:layout_marginBottom="23dp"
                     android:text="Filtrar por:"
                     android:textColor="#000000"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/spFecha"
+                    app:layout_constraintBottom_toTopOf="@+id/spTChart"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/imageView5"
                     android:layout_width="26dp"
                     android:layout_height="29dp"
-                    android:layout_marginStart="29dp"
-                    android:layout_marginTop="50dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginStart="66dp"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginBottom="46dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/spLitros"
+                    app:layout_constraintEnd_toStartOf="@+id/radioGroup2"
                     app:layout_constraintStart_toEndOf="@+id/spTChart"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/filtrar"
                     app:srcCompat="@drawable/ic_humidity" />
 
-                <Spinner
-                    android:id="@+id/spLitros"
-                    android:layout_width="wrap_content"
+                <RadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="202dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="88dp"
+                    android:checkedButton="@+id/rMes"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toTopOf="@+id/radioGroup2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <RadioButton
+                        android:id="@+id/rMes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Mes"
+                        android:textSize="10sp" />
+
+                    <RadioButton
+                        android:id="@+id/rDia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Día"
+                        android:textSize="10sp" />
+
+                    <RadioButton
+                        android:id="@+id/rHora"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Hora"
+
+                        android:textSize="10sp"
+                        tools:text="Hora" />
+
+                </RadioGroup>
+
+                <RadioGroup
+                    android:id="@+id/radioGroup2"
+                    android:layout_width="260dp"
                     android:layout_height="30dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="50dp"
-                    android:layout_marginEnd="91dp"
-                    android:layout_marginBottom="19dp"
-                    android:entries="@array/txtLitros"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="30dp"
+                    android:layout_marginBottom="44dp"
+                    android:checkedButton="@+id/rLitro"
+                    android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imageView5"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/radioGroup">
+
+                    <RadioButton
+                        android:id="@+id/rLitro"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Litro"
+                        android:textSize="10sp" />
+
+                    <RadioButton
+                        android:id="@+id/rGalon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Galón"
+                        android:textSize="10sp" />
+
+                    <RadioButton
+                        android:id="@+id/rMC"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Metro Cúbico"
+                        android:textSize="10sp" />
+                </RadioGroup>
 
             </android.support.constraint.ConstraintLayout>
 
@@ -181,7 +232,7 @@
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/lineChart"
                         android:layout_width="match_parent"
-                        android:layout_height="300dp"
+                        android:layout_height="257dp"
                         android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
