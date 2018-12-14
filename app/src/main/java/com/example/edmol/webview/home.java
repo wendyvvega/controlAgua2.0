@@ -18,7 +18,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class home extends AppCompatActivity {
-    private ImageView control, ajustes, grafica;
+    private ImageView control, ajustes, grafica, manual;
     RelativeLayout display2;
     String fondoActual;
 
@@ -48,6 +48,14 @@ public class home extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openGrafica();
+            }
+        });
+
+        manual = (ImageView) findViewById(R.id.imgProblema);
+        manual.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openManual();
             }
         });
 
@@ -89,6 +97,12 @@ public class home extends AppCompatActivity {
         Intent c = new Intent(getApplicationContext(), control.class);
         c.putExtra("fondoActual",fondoActual);
         startActivityForResult(c,1);
+    }
+
+    public void openManual() {
+        Intent m = new Intent(getApplicationContext(), manual.class);
+        m.putExtra("fondoActual",fondoActual);
+        startActivityForResult(m,1);
     }
 
     public void openAjustes() {
