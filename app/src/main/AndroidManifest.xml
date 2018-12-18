@@ -39,7 +39,8 @@
             android:label="@string/title_activity_control"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".manual"></activity>
+        <activity android:name=".manual"
+            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
     </application>
 
 </manifest>
