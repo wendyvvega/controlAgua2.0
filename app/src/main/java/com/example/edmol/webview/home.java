@@ -70,6 +70,8 @@ public class home extends AppCompatActivity {
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 String fondoSeleccionado = data.getStringExtra("fondoSeleccionado").toString();
+                String tamanoSeleccionado = data.getStringExtra("tamanoSelecionado").toString();
+                Toast.makeText(this, tamanoSeleccionado, Toast.LENGTH_SHORT).show();
                 fondoActual = fondoSeleccionado;
                 switch (fondoActual) {
                     case "colorFondo1":
