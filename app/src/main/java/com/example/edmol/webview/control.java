@@ -20,6 +20,7 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +49,7 @@ public class control extends AppCompatActivity implements TextWatcher {
     ToggleButton btnModo;
     String txtCantidad;
     RadioButton rbGalones,rMC;
+    TextView textView1;
 
     //variables para la conexion
     Handler bluetoothIn;
@@ -68,6 +70,7 @@ public class control extends AppCompatActivity implements TextWatcher {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
+        textView1 = (TextView) findViewById(R.id.tvParametros);
         cantidad = findViewById(R.id.etAgua);
         botonManual = findViewById(R.id.botonPrender);
         display2 = (RelativeLayout) findViewById(R.id.Fondo);
@@ -84,8 +87,9 @@ public class control extends AppCompatActivity implements TextWatcher {
         aguaTotal.addTextChangedListener(this);
 
 
-        String fondoActual;
+        String fondoActual, tamanoActual;
         fondoActual = getIntent().getExtras().getString("fondoActual");
+        tamanoActual = getIntent().getExtras().getString("tamanoActual");
         switch (fondoActual) {
             case "colorFondo1":
                 display2.setBackgroundColor(getResources().getColor(R.color.colorFondo1));
@@ -101,6 +105,20 @@ public class control extends AppCompatActivity implements TextWatcher {
                 break;
             default:
                 Toast.makeText(this, "Algo malo pasó", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        switch (tamanoActual) {
+            case "tamano25":
+                textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                break;
+            case "tamano30":
+                textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                break;
+            case "tamano35":
+                textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+                break;
+            default:
                 break;
         }
 

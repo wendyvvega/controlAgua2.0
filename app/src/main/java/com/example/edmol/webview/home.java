@@ -113,6 +113,7 @@ public class home extends AppCompatActivity {
     public void openControl() {
         Intent c = new Intent(getApplicationContext(), control.class);
         c.putExtra("fondoActual",fondoActual);
+        c.putExtra("tamanoActual",tamanoActual);
         startActivityForResult(c,1);
     }
 
