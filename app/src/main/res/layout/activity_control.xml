@@ -85,6 +85,16 @@
             android:layout_marginTop="2dp"
             android:text="C/h"
             android:textColor="@color/black" />
+
+        <ImageView
+            android:id="@+id/regresarMedidor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="9dp"
+            app:srcCompat="@drawable/ic_arrow_back_black_24dp" />
     </RelativeLayout>
 
     <RelativeLayout

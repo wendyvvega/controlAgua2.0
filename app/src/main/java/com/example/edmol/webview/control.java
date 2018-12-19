@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
@@ -50,6 +51,7 @@ public class control extends AppCompatActivity implements TextWatcher {
     String txtCantidad;
     RadioButton rbGalones,rMC;
     TextView textView1;
+    ImageView regresar;
 
     //variables para la conexion
     Handler bluetoothIn;
@@ -83,6 +85,21 @@ public class control extends AppCompatActivity implements TextWatcher {
         equivalencia = (TextView) findViewById(R.id.txtEqui);
         rbGalones = (RadioButton) findViewById(R.id.rbGalones);
         rMC = findViewById(R.id.rbCubicos);
+        regresar=findViewById(R.id.regresarMedidor);
+        regresar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch(v.getId()){
+                    case R.id.regresarMedidor:
+                        botonPrender3.setChecked(false);
+                        botonManual.setChecked(false);
+                        mConnectedThread.write("x");
+                        finish();
+                        break;
+
+                }
+            }
+        });
 
         aguaTotal.addTextChangedListener(this);
 
@@ -127,9 +144,11 @@ public class control extends AppCompatActivity implements TextWatcher {
                 if (isChecked) {
                     auto_mood.setVisibility(CompoundButton.INVISIBLE);
                     manual_mood.setVisibility(CompoundButton.VISIBLE);
+                    botonPrender3.setChecked(false);
                 } else {
                     auto_mood.setVisibility(CompoundButton.VISIBLE);
                     manual_mood.setVisibility(CompoundButton.INVISIBLE);
+                    botonManual.setChecked(false);
                 }
             }
         });
@@ -426,7 +445,7 @@ public class control extends AppCompatActivity implements TextWatcher {
                 mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
             } catch (IOException e) {
                 //if you cannot write, close the application
-                Toast.makeText(control.this, "La Conexión fallo", Toast.LENGTH_LONG).show();
+               // Toast.makeText(control.this, "La Conexión fallo", Toast.LENGTH_LONG).show();
                 finish();
             }
         }

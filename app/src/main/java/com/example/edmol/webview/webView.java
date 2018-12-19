@@ -159,7 +159,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         }
 
 
-        cfgLineaMes();
+       // cfgLineaMes();
 
 
     }
@@ -183,7 +183,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         }
 
 
-        cfgLineaFecha(xVals);
+        //cfgLineaFecha(xVals);
 
 
 
@@ -207,7 +207,27 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         }
 
 
-        cfgLineaFecha(xVals);
+      /*  axisXL.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+               /* String val = "";
+                try {
+                    val = xVals.get((int) value);
+                    axisXL.setGranularity(1f);
+                } catch (IndexOutOfBoundsException e) {
+                    axis.setGranularityEnabled(false);
+                }
+                return val;
+                if (value >= 0) {
+                    if (value <= xVals.size()-1 ) {
+                        return xVals.get((int) value);
+                    }return ""; }
+                return "";
+
+
+
+            }
+        });*/
 
     }
     public void cfgLineaMes(){
@@ -229,6 +249,27 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         chart.getXAxis().setDrawAxisLine(true);
         chart.getXAxis().setDrawGridLines(true);
         axisXL.setAvoidFirstLastClipping(true);
+        axisXL.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+               /* String val = "";
+                try {
+                    val = xVals.get((int) value);
+                    axisXL.setGranularity(1f);
+                } catch (IndexOutOfBoundsException e) {
+                    axis.setGranularityEnabled(false);
+                }
+                return val;*/
+                if (value >= 0) {
+                    if (value <= xVals.size() ) {
+                        return xVals.get(0);
+                    }return ""; }
+                return "";
+
+
+
+            }
+        });
 
         axisXL.setGranularity(1f);
 
@@ -259,14 +300,19 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         axisXL.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                String val = "";
+               /* String val = "";
                 try {
                     val = xVals.get((int) value);
                     axisXL.setGranularity(1f);
                 } catch (IndexOutOfBoundsException e) {
                     axis.setGranularityEnabled(false);
                 }
-                return val;
+                return val;*/
+                if (value >= 0) {
+                    if (value <= xVals.size()-1) {
+                        return xVals.get((int) value);
+                    }return ""; }
+                return "";
 
 
 
@@ -299,6 +345,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         chart.animateXY(5000,5000);
         lineData.setValueTextSize(18f);
         lineData.notifyDataChanged();
+        cfgLineaFecha(xVals);
         chart.notifyDataSetChanged();
         chart.invalidate();
 
@@ -418,7 +465,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
                xVals.add(l);
            }
            cfgBarra(entradaBarraLitros);
-           cfgBarraFechaMes();
+           //cfgBarraFechaMes();
 
        }
 
@@ -442,7 +489,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         }
 
         cfgBarra(entradaBarraLitros);
-        cfgBarraFecha();
+       // cfgBarraFecha();
 
 
     }
@@ -465,7 +512,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         }
 
         cfgBarra(entradaBarraLitros);
-        cfgBarraFecha();
+      //  cfgBarraFecha();
 
 
     }
@@ -496,6 +543,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
            barraH.setOnChartValueSelectedListener(this);
            barraH.animateXY(2000,2000);
            barraH.setFitBars(true);
+           cfgBarraFecha();
            data.notifyDataChanged();
            barraH.notifyDataSetChanged();
            barraH.invalidate();
@@ -518,7 +566,18 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         axisX.setGranularity(1f);
         axisX.setPosition(XAxis.XAxisPosition.TOP);
         axisX.setDrawGridLines(false);
-        axisX.setValueFormatter(formatterMes);
+        axisX.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                if (value >= 0) {
+                    if (value <= xVals.size()-1 ) {
+                        return xVals.get((int) value);
+                    }return ""; }
+                return "";
+
+
+            }
+        });
        /* axisX.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
@@ -555,27 +614,21 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
        axisX.setPosition(XAxis.XAxisPosition.TOP);
         axisX.setDrawGridLines(false);
 
-          /*  axisX.setValueFormatter(new IAxisValueFormatter() {
+            axisX.setValueFormatter(new IAxisValueFormatter() {
                 @Override
                 public String getFormattedValue(float value, AxisBase axis) {
 
-                    if (((int) value) < xVals.size()) {
-                        weekArr= xVals.toArray(new String[(int)value-1]);
-                        for(String a : weekArr ){
-                            return a;
-                        }
-
-
-                    }
-
-                             weekArr= xVals.toArray(new String[(int)value]);
-
+                    if (value >= 0) {
+                        if (value <= xVals.size()-1) {
+                            return xVals.get((int) value);
+                        }return ""; }
                     return "";
 
-                }
-            });*/
 
-                axisX.setValueFormatter(formatterMes);
+
+                }
+            });
+
                 //axisX.setLabelCount(entradaBarraLitros.size());
 
         barraH.animateXY(2000,2000);
