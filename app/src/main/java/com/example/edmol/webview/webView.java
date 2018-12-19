@@ -11,17 +11,23 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -46,36 +52,25 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
     private HorizontalBarChart barraH;
     private ImageView flecha;
     private Spinner spFecha,spLitros,spTgraf;
+    private RadioGroup rGFecha,rGLitros;
 
     private String Url = "https://reports.zoho.com/open-view/1818177000000002051/2bec8a48eadcfe479fb9737b6b02038d";
     private RelativeLayout rl;
-    private  XAxis axisX;
+    private  XAxis axisX,axisXL;
     private LineDataSet dataSetL;
-    private BarDataSet dataSetB;
+
     private final ArrayList<String> xVals = new ArrayList<String>();
     private  ArrayList<Float> litrosNormales = new ArrayList<>();
-    private  ArrayList<Float> datosGalones = new ArrayList<>();
     private  ArrayList<Float> datosMc = new ArrayList<>();
     private ArrayList<String> xNewData = new ArrayList<String>();
     private ArrayList<BarEntry> entradaBarraLitros = new ArrayList<>();
-    private ArrayList<BarEntry> entradaBarraGalon = new ArrayList<>();
     private ArrayList<BarEntry> entradaBarraMc = new ArrayList<>();
     private ArrayList<Entry> entradaLinea = new ArrayList<>();
-    private ArrayList<Entry> entradaLineaGalon = new ArrayList<>();
     private ArrayList<Entry> entradaLineaMc = new ArrayList<>();
-    private RadioButton rMes,rDia,rHora,rLitro,rGalon,rMC;
-public void limpiarArreglos(){
-    xVals.clear();
-    litrosNormales.clear();
-    datosGalones.clear();
-    datosMc.clear();
-    entradaLinea.clear();
-    entradaBarraLitros.clear();
-    entradaLineaGalon.clear();
-    entradaLineaMc.clear();
-    entradaBarraGalon.clear();
-    entradaBarraMc.clear();
-}
+    private RadioButton rMes,rDia,rHora;
+    private CheckBox cMc;
+    private LineData lineData;
+    private  BarData data;
     private  AdminBD bd = new AdminBD(this);
     final String[] meses = new String[] { "Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dec"};
     int seleccion;
@@ -91,12 +86,8 @@ public void limpiarArreglos(){
         super.onCreate(savedInstanceState);
         rl = findViewById(R.id.layoutChart);
         setContentView(R.layout.activity_web_view);
-        rMes= findViewById(R.id.rMes);
-        rDia = findViewById(R.id.rDia);
-        rHora=findViewById(R.id.rHora);
-        rLitro = findViewById(R.id.rLitro);
-        rGalon=findViewById(R.id.rGalon);
-        rMC=findViewById(R.id.rMC);
+
+        rGFecha = findViewById(R.id.rGFecha);
 
         spTgraf = findViewById(R.id.spTChart);
         flecha = findViewById(R.id.flechaAtr);
@@ -104,23 +95,14 @@ public void limpiarArreglos(){
         barraH = findViewById(R.id.barChart);
         chart = findViewById(R.id.lineChart);
 
+        barraH.setNoDataText("Selecciona un filtro para mostrar los datos");
+        barraH.invalidate();
+        chart.setNoDataText("Selecciona un filtro para mostrar los datos");
+        chart.invalidate();
         ArrayAdapter <CharSequence> adapter2 = ArrayAdapter.createFromResource(this, R.array.txtTGraf,          android.R.layout.simple_spinner_item);
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTgraf.setAdapter(adapter2);
         spTgraf.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-
-
-
-
-
-
-        BarChart barra = new BarChart(this);
-        barra.setOnChartGestureListener(com.example.edmol.webview.webView.this);
-
-        barra.setOnChartValueSelectedListener(com.example.edmol.webview.webView.this);
-        barra.setDragEnabled(true);
-        barra.setScaleEnabled(true);
-        barra.setPinchZoom(true);
 
 
 
@@ -177,7 +159,7 @@ public void limpiarArreglos(){
         }
 
 
-        cfgLineaFecha(xVals);
+        cfgLineaMes();
 
 
     }
@@ -228,20 +210,69 @@ public void limpiarArreglos(){
         cfgLineaFecha(xVals);
 
     }
+    public void cfgLineaMes(){
+
+        //Inicializar e introducir datos
+        axisXL = chart.getXAxis();
+
+        axisXL.setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.fitScreen();
+        chart.getAxisLeft().setEnabled(true);
+        chart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(true);
+
+        chart.getAxisRight().setDrawAxisLine(true);
+        chart.getAxisRight().setDrawGridLines(true);
+        chart.getXAxis().setDrawAxisLine(true);
+        chart.getXAxis().setDrawGridLines(true);
+        axisXL.setAvoidFirstLastClipping(true);
+
+        axisXL.setGranularity(1f);
+
+        chart.animateXY(5000,5000);
+        chart.notifyDataSetChanged();
+        chart.invalidate();
+
+    }
     public void cfgLineaFecha(final ArrayList <String> xVals ){
 
         //Inicializar e introducir datos
+        axisXL = chart.getXAxis();
 
-        axisX = chart.getXAxis();
-        axisX.setGranularity(1f);
-        axisX.setValueFormatter(new IAxisValueFormatter() {
+        axisXL.setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.fitScreen();
+        chart.getAxisLeft().setEnabled(true);
+        chart.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        chart.setDragEnabled(true);
+        chart.setScaleEnabled(true);
+
+        chart.getAxisRight().setDrawAxisLine(true);
+        chart.getAxisRight().setDrawGridLines(true);
+        chart.getXAxis().setDrawAxisLine(true);
+        chart.getXAxis().setDrawGridLines(true);
+        axisXL.setAvoidFirstLastClipping(true);
+        axisXL.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                int intValue = (int)value;
-                return (xVals.size() > intValue && intValue >= 0) ? xVals.get(intValue) : "";
+                String val = "";
+                try {
+                    val = xVals.get((int) value);
+                    axisXL.setGranularity(1f);
+                } catch (IndexOutOfBoundsException e) {
+                    axis.setGranularityEnabled(false);
+                }
+                return val;
+
+
+
             }
-            public int getDecimalDigits() {  return 0; }
         });
+        axisXL.setGranularity(1f);
 
         chart.animateXY(5000,5000);
         chart.notifyDataSetChanged();
@@ -259,10 +290,12 @@ public void limpiarArreglos(){
         dataSetL.setDrawFilled(true);
         dataSetL.setColors(ColorTemplate.COLORFUL_COLORS);
         Collections.sort(entrada, new EntryXComparator());
-        LineData lineData= new LineData(dataSetL);
+       lineData= new LineData(dataSetL);
         //Ver como pasar de parámtero un data para meter dataset dinámicos desde
         //El switch por fecha
         chart.setData(lineData);
+
+        chart.setOnChartValueSelectedListener(this);
         chart.animateXY(5000,5000);
         lineData.setValueTextSize(18f);
         lineData.notifyDataChanged();
@@ -270,7 +303,7 @@ public void limpiarArreglos(){
         chart.invalidate();
 
     }
-    
+
     /***********************************************************************************/
     public void barras(int k){
        
@@ -282,8 +315,13 @@ public void limpiarArreglos(){
         barraH.setOnChartValueSelectedListener(com.example.edmol.webview.webView.this);
         barraH.setOnChartGestureListener(com.example.edmol.webview.webView.this);
         barraH.setDragEnabled(true);
-        barraH.setScaleEnabled(true);
+        barraH.setScaleEnabled(false);
         barraH.setPinchZoom(true);
+        barraH.setDrawValueAboveBar(true);
+
+
+
+
         switch (k){
             case 0:
                 mostrarBarraMes();
@@ -297,11 +335,16 @@ public void limpiarArreglos(){
 
 
     }
-    IAxisValueFormatter formatter = new IAxisValueFormatter() {
+    IAxisValueFormatter formatterMes = new IAxisValueFormatter() {
+        String[] arreglo = xVals.toArray(new String[xVals.size()]);
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return meses[(int) value];
+            for(String h:arreglo){
+                return meses[Integer.parseInt(h)];
+            }
+            return "";
+
         }
 
         // we don't draw numbers, so no decimal digits needed
@@ -309,19 +352,7 @@ public void limpiarArreglos(){
         public int getDecimalDigits() {  return 0; }
     };
 /*************************************Convertir de litros a **************************************************************************/
-    public ArrayList<Float> litroGalon(){
 
-
-            ListIterator <Float> k= litrosNormales.listIterator();
-            Float h=0f;
-            while(k.hasNext()){
-                h =  k.next();
-               datosGalones.add(h);
-            }
-            Log.d("NewData",String.valueOf(litrosNormales));
-            return datosGalones;
-
-    }
 
 
     public ArrayList<Float> litrosMc(){
@@ -348,16 +379,7 @@ public void limpiarArreglos(){
             entradaBarraMc.add(new BarEntry(k.nextIndex(),h/1000f));
         }
     }
-    public void mostrarLitrosGalonBarra(){
 
-        ListIterator <Float> k= litroGalon().listIterator();
-        Float h=0f;
-
-        while(k.hasNext()){
-            h =  k.next();
-            entradaBarraGalon.add(new BarEntry(k.nextIndex(),h/3.785f));
-        }
-    }
 
     /**********************************Convertir lineal**********************************************************/
     public void mostrarLitrosMcLinea(){
@@ -370,16 +392,7 @@ public void limpiarArreglos(){
             entradaLineaMc.add(new Entry(k.nextIndex(),h/1000f));
         }
     }
-    public void mostrarLitrosGalonBarraLinea(){
 
-        ListIterator <Float> k= litroGalon().listIterator();
-        Float h=0f;
-
-        while(k.hasNext()){
-            h =  k.next();
-            entradaLineaGalon.add(new Entry(k.nextIndex(),h/3.785f));
-        }
-    }
 
     /**********************************Convertir lineal**********************************************************/
 
@@ -404,26 +417,11 @@ public void limpiarArreglos(){
                l=s.next();
                xVals.add(l);
            }
-
-
-           cfgBarraFecha(xVals);
+           cfgBarra(entradaBarraLitros);
+           cfgBarraFechaMes();
 
        }
-       public void limpiarBarra(){
-           if(!barraH.isEmpty()){
 
-        barraH.clearValues();}
-        barraH.notifyDataSetChanged();
-        barraH.clear();
-        barraH.invalidate();
-    }
-    public void limpiarLinea(){
-           if (!chart.isEmpty()){
-        chart.clearValues();}
-        chart.notifyDataSetChanged();
-        chart.clear();
-        chart.invalidate();
-    }
     public void mostrarBarraDia(){
 
 
@@ -443,8 +441,9 @@ public void limpiarArreglos(){
             xVals.add(l);
         }
 
+        cfgBarra(entradaBarraLitros);
+        cfgBarraFecha();
 
-        cfgBarraFecha(xVals);
 
     }
     public void mostrarBarraHora(){
@@ -465,33 +464,36 @@ public void limpiarArreglos(){
             xVals.add(l);
         }
 
+        cfgBarra(entradaBarraLitros);
+        cfgBarraFecha();
 
-        cfgBarraFecha(xVals);
 
     }
 
 
 
        public void cfgBarra(ArrayList <BarEntry> entradaBarra){
-
+           BarDataSet dataSetB;
            //Inicializar e introducir datos
            dataSetB = new BarDataSet(entradaBarra,"Agua gastada en promedio");
-           dataSetB.setColor(Color.rgb(7,169,234));
+           dataSetB.setColors(ColorTemplate.COLORFUL_COLORS);
            dataSetB.setHighLightAlpha(2);
            dataSetB.setHighLightColor(Color.BLACK);
+           dataSetB.setHighlightEnabled(true);
+
            //
            //Ordenar datos
 
            Collections.sort(entradaBarra, new EntryXComparator());
            //Crear los datos para meterlos a la gráfica
+           data= new BarData(dataSetB);
 
-           BarData data = new BarData(dataSetB);
-
-           data.setBarWidth(0.6f);
+           data.setBarWidth(0.3f);
 
 
            //Meter datos en la gráfica
            barraH.setData(data);
+           barraH.setOnChartValueSelectedListener(this);
            barraH.animateXY(2000,2000);
            barraH.setFitBars(true);
            data.notifyDataChanged();
@@ -499,20 +501,82 @@ public void limpiarArreglos(){
            barraH.invalidate();
 
        }
-    public void cfgBarraFecha(final ArrayList <String> xVals ){
+
+    public void cfgBarraFechaMes(){
 
         //Inicializar e introducir datos
 
         axisX = barraH.getXAxis();
+        axisX.setAvoidFirstLastClipping(true);
+        ValueFormatter xAxisFormatter = new DayAxisValueFormatter(barraH);
+        XYMarkerView mv = new XYMarkerView(this, xAxisFormatter);
+        mv.setChartView(barraH); // For bounds control
+        barraH.setMarker(mv);
+        barraH.fitScreen();
+        barraH.setAutoScaleMinMaxEnabled(true);
+        barraH.setDrawValueAboveBar(true);
         axisX.setGranularity(1f);
-        axisX.setValueFormatter(new IAxisValueFormatter() {
+        axisX.setPosition(XAxis.XAxisPosition.TOP);
+        axisX.setDrawGridLines(false);
+        axisX.setValueFormatter(formatterMes);
+       /* axisX.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                int intValue = (int)value;
-                return (xVals.size() > intValue && intValue >= 0) ? xVals.get(intValue) : "";
+                String[] weekArr;
+                weekArr = xVals.toArray(new String[0]);
+                return weekArr[(int) 0];
+
             }
-            public int getDecimalDigits() {  return 0; }
-        });
+        });*/
+
+        // axisX.setValueFormatter(formatter);
+        axisX.setLabelCount(entradaBarraLitros.size());
+
+        barraH.animateXY(2000,2000);
+        barraH.setFitBars(true);
+        barraH.notifyDataSetChanged();
+        barraH.invalidate();
+
+    }
+    public void cfgBarraFecha(){
+
+        //Inicializar e introducir datos
+
+        axisX = barraH.getXAxis();
+        axisX.setAvoidFirstLastClipping(true);
+        ValueFormatter xAxisFormatter = new DayAxisValueFormatter(barraH);
+        XYMarkerView mv = new XYMarkerView(this, xAxisFormatter);
+        mv.setChartView(barraH); // For bounds control
+        barraH.setMarker(mv);
+       barraH.fitScreen();
+       barraH.setAutoScaleMinMaxEnabled(true);
+       barraH.setDrawValueAboveBar(true);
+        axisX.setGranularity(1f);
+       axisX.setPosition(XAxis.XAxisPosition.TOP);
+        axisX.setDrawGridLines(false);
+
+          /*  axisX.setValueFormatter(new IAxisValueFormatter() {
+                @Override
+                public String getFormattedValue(float value, AxisBase axis) {
+
+                    if (((int) value) < xVals.size()) {
+                        weekArr= xVals.toArray(new String[(int)value-1]);
+                        for(String a : weekArr ){
+                            return a;
+                        }
+
+
+                    }
+
+                             weekArr= xVals.toArray(new String[(int)value]);
+
+                    return "";
+
+                }
+            });*/
+
+                axisX.setValueFormatter(formatterMes);
+                //axisX.setLabelCount(entradaBarraLitros.size());
 
         barraH.animateXY(2000,2000);
         barraH.setFitBars(true);
@@ -541,114 +605,175 @@ public void limpiarArreglos(){
     public void onItemSelected(AdapterView<?> adapterView, View view,int i , long l) {
 
         String item = (String) adapterView.getSelectedItem();
-
+        rGFecha.clearCheck();
 
         switch(item){
             case "Lineal":
 
                     chart.setVisibility(View.VISIBLE);
                     barraH.setVisibility(View.GONE);
-                    if(rMes.isChecked()) {
-                        if(!chart.isEmpty()){
-                            limpiarArreglos();
-                            limpiarLinea();
-                           }
 
-                        grafLinea(0);
-                    }
-                    if(rDia.isChecked()) {
-                        if(!chart.isEmpty()){
-                            limpiarArreglos();
-                            limpiarLinea();
-                           }
-                        grafLinea(1);
-                    }
-                    if(rHora.isChecked()) {
-                        if(!chart.isEmpty()){
-                            limpiarArreglos();
-                            limpiarLinea();
-                            }
-                        grafLinea(2);
-                    }
-                if(rLitro.isChecked()) {
-                    if(!chart.isEmpty()){
-                        limpiarArreglos();
-                        limpiarLinea();
-                       }
-                    cfgLinea(entradaLinea);
-                }
-                if(rGalon.isChecked()) {
-                    if(!chart.isEmpty()){
-                        limpiarArreglos();
-                        limpiarLinea();
-                        }
-                    mostrarLitrosGalonBarraLinea();
-                    cfgLinea(entradaLineaGalon);
-                }
-                if(rMC.isChecked()) {
-                        if(!chart.isEmpty()){
-                    limpiarArreglos();
-                    limpiarLinea();
-                 }
-                    mostrarLitrosMcLinea();
-                    cfgLinea(entradaLineaMc);
-                }
+                    // rGFecha.check(R.id.rMes);
+
+                rGFecha.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        switch (checkedId){
+                            case R.id.rMes:
+                                if (!chart.isEmpty() ) {
+
+                                    xVals.clear();
+
+                                    litrosNormales.clear();
+                                    datosMc.clear();
+                                    entradaLinea.clear();
+                                    entradaLineaMc.clear();
+                                    //entradaBarraLitros.clear();
+                                    xNewData.clear();
+                                   // entradaBarraMc.clear();
+                                    grafLinea(0);
+                                    cfgLineaMes();
+                                } else {
+                                    grafLinea(0);
+                                    cfgLineaMes();
+                                }
+                                break;
+                            case R.id.rDia:
+                                if (!chart.isEmpty()) {
+                                    xVals.clear();
+
+                                    litrosNormales.clear();
+                                    datosMc.clear();
+                                    entradaLinea.clear();
+                                    entradaLineaMc.clear();
+                                    xNewData.clear();
+                                    grafLinea(1);
+                                    cfgLinea(entradaLinea);
+                                } else {
+                                    grafLinea(1);
+                                    cfgLinea(entradaLinea);
+                                }
+                                break;
+                            case R.id.rHora:
+                                if (!chart.isEmpty()) {
+                                    xVals.clear();
+
+                                    litrosNormales.clear();
+                                    datosMc.clear();
+                                    xNewData.clear();
+                                    entradaLinea.clear();
+                                    entradaLineaMc.clear();
+                                    grafLinea(2);
+                                    cfgLinea(entradaLinea);
+                                } else {
+                                    grafLinea(2);
+                                    cfgLinea(entradaLinea);
+                                }
+                                break;
+                        }}
+                });
+
+                break;
+
+
 
 
             case "Barras-Horizontal":
+                chart.setVisibility(View.GONE);
+                barraH.setVisibility(View.VISIBLE);
+                rGFecha.clearCheck();
+
+             //   rGFecha.check(R.id.rMes);
 
 
-                     chart.setVisibility(View.GONE);
-                    barraH.setVisibility(View.VISIBLE);
-                if(rMes.isChecked()) {
-                    if(!barraH.isEmpty()){
-                    limpiarArreglos();
-                    limpiarBarra();
+                rGFecha.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        switch (checkedId){
+                            case R.id.rMes:
+                                if (!barraH.isEmpty()) {
+                                    xNewData.clear();
+                                    xVals.clear();
+
+                                    litrosNormales.clear();
+                                    datosMc.clear();
+                                    entradaBarraLitros.clear();
+                                    entradaBarraMc.clear();
+                                    barras(0);
+
+                                    //cfgBarra(entradaBarraLitros);
+                                } else {
+                                    barras(0);
+                                    //cfgBarra(entradaBarraLitros);
+                                }
+                                break;
+                            case R.id.rDia:
+                                if (!barraH.isEmpty()) {
+                                    xVals.clear();
+                                    xNewData.clear();
+
+                                    litrosNormales.clear();
+                                    datosMc.clear();
+                                    entradaBarraLitros.clear();
+                                    entradaBarraMc.clear();
+                                    barras(1);
+
+
+                                } else {
+                                    barras(1);
+
+
+                                }
+                                break;
+                            case R.id.rHora:
+                                if (!barraH.isEmpty()) {
+                                    xVals.clear();
+                                    xNewData.clear();
+
+                                    litrosNormales.clear();
+                                    datosMc.clear();
+                                    entradaBarraLitros.clear();
+                                    entradaBarraMc.clear();
+                                    barras(2);
+
+
+                                } else {
+                                    barras(2);
+
+
+                                }
+                                break;
+                        }
+                        int id=group.getCheckedRadioButtonId();
+                        rMes = findViewById(id);
+                        rDia = findViewById(id);
+                        rHora = findViewById(id);
+
+
+                         /*   if(checkedId==rMes.getId()) {
+
+                            }else{
+                                if(checkedId==rDia.getId()) {
+
+                                    if (!barraH.isEmpty()) {
+
+                                        limpiarBarra();
+                                        barras(1);
+                                    }
+                                    barras(1);
+                                }else{
+                                    if(checkedId==rHora.getId()){
+                                        if (!barraH.isEmpty()) {
+                                            limpiarBarra();
+                                        }
+                                        barras(2);
+                                    }
+                                }
+                            }*/
                     }
-                    barras(0);
-                }
-                if(rDia.isChecked()) {
-                    if(!barraH.isEmpty()){
-                        limpiarArreglos();
-                        limpiarBarra();
-                       }
-                    barras(1);
-                }
-                if(rHora.isChecked()) {
-                    if(!barraH.isEmpty()){
-                        limpiarArreglos();
-                        limpiarBarra();
-                       }
-                    barras(2);
-                }
-                if(rLitro.isChecked()) {
-                    if(!barraH.isEmpty()){
-                        limpiarArreglos();
-                        limpiarBarra();
-                       }
-                    cfgBarra(entradaBarraLitros);
-                }
-                if(rGalon.isChecked()) {
-                    if(!barraH.isEmpty()){
-                        limpiarArreglos();
-                        limpiarBarra();
-                       }
-                    mostrarLitrosGalonBarra();
-                    cfgBarra(entradaBarraGalon);
-                }
-                if(rMC.isChecked()) {
-                    if(!barraH.isEmpty()){
-                        limpiarArreglos();
-                        limpiarBarra();
-                    }
 
-                    mostrarLitrosMc();
-                    cfgBarra(entradaBarraMc);
-                }
-                     break;
-                    
-                }
-        }
+                });  break;}}
+
 
 
     @Override
@@ -664,8 +789,8 @@ public void limpiarArreglos(){
                 break;
         }
     }
-
-public ArrayList <String> obtenerDia(){
+/*****************************Llenar label****************************/
+public void obtenerDia(){
         AdminBD bd = new AdminBD(this);
         SQLiteDatabase base = bd.getWritableDatabase();
 
@@ -674,10 +799,9 @@ public ArrayList <String> obtenerDia(){
             xNewData.add(c.getString(c.getColumnIndex("dia")));
         }
         c.close();
-        return xNewData;
 
     }
-    public ArrayList <String> obtenerHora(){
+    public void obtenerHora(){
         AdminBD bd = new AdminBD(this);
         SQLiteDatabase base = bd.getWritableDatabase();
         Cursor c = bd.consultaHora(base);
@@ -685,45 +809,46 @@ public ArrayList <String> obtenerDia(){
             xNewData.add(c.getString(c.getColumnIndex("hora")));
         }
         c.close();
-        return xNewData;
 
     }
-    public ArrayList <String> obtenerMes() {
+    public void obtenerMes() {
         SQLiteDatabase base = bd.getWritableDatabase();
         Cursor c = bd.consultaMes(base);
         for (c.moveToFirst(); !c.isAfterLast(); c.moveToNext()) {
             xNewData.add(c.getString(c.getColumnIndex("mes")));
         }
         c.close();
-        return xNewData;
     }
-    public ArrayList<Float> obtenerLitrosMes(){
+    /*****************************Llenar label****************************/
+    /*****************************Llenar ArrayLitros**********************/
+    public void  obtenerLitrosMes(){
         SQLiteDatabase base = bd.getWritableDatabase();
-        Cursor cursor = bd.consultaMes(base);
+        Cursor cursor = base.rawQuery("SELECT  printf(\"%.2f\",(AVG(litros_consumidos))) AS Litro from tb_registros group by strftime('%m',fecha)",null);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
         }
         cursor.close();
-        return litrosNormales;
+
     }
-    public ArrayList<Float> obtenerLitrosDia(){
+    public void obtenerLitrosDia(){
         SQLiteDatabase base = bd.getWritableDatabase();
         Cursor cursor = bd.consultaDia(base);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
         }
         cursor.close();
-        return litrosNormales;
+
     }
-    public ArrayList<Float> obtenerLitrosHora(){
+    public void obtenerLitrosHora(){
         SQLiteDatabase base = bd.getWritableDatabase();
         Cursor cursor = bd.consultaHora(base);
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             litrosNormales.add(cursor.getFloat(cursor.getColumnIndex("Litro")));
         }
         cursor.close();
-        return litrosNormales;
+
     }
+    /*****************************Llenar ArrayLitros**********************/
 
 
 
@@ -796,6 +921,7 @@ public ArrayList <String> obtenerDia(){
 
     @Override
     public void onValueSelected(Entry e, Highlight h) {
+
 
     }
 

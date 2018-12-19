@@ -167,7 +167,7 @@ public class control extends AppCompatActivity implements TextWatcher {
                 if(!b){
                     mConnectedThread.write("x");
                     //INSERTAR BD MANUAL
-                    if(!txtCantidad.isEmpty()) {
+                    if(!txtCantidad.isEmpty()&&btnModo.isChecked()) {
                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
                     Date date = new Date();
                     String fecha = dateFormat.format(date);
@@ -187,14 +187,14 @@ public class control extends AppCompatActivity implements TextWatcher {
                     cantidad.setEnabled(true);
                     mConnectedThread.write("x");
                     //INSERTAR BD AUTOMATICO
-                    if(!txtCantidad.isEmpty()) {
+                   /* if(!txtCantidad.isEmpty()) {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
                         Date date = new Date();
                         String fecha = dateFormat.format(date);
                         String txtCaudal = flujoAgua.getText().toString();
                         SQLiteDatabase basedatos = bd.getWritableDatabase();
                         bd.insertarRegistro(basedatos, fecha, Float.parseFloat(txtCantidad), "automatico", txtCaudal);
-                    }
+                    }*/
                 }
 
                 else {

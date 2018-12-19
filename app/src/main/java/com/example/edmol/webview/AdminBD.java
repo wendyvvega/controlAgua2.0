@@ -21,7 +21,7 @@ public class AdminBD extends SQLiteOpenHelper{
     final static String consulta_litros= "SELECT printf(\"%.2f\",(AVG("+campo_litros_consumidos+"))) AS Litro FROM "+tb_nombre+";";
     final static String consulta_galones= "SELECT printf(\"%.2f\",(AVG(litros_consumidos)/3.785)) AS Galon From "+tb_nombre+";";
     final static String consulta_mc= "SELECT printf(\"%.2f\",(AVG(litros_consumidos)/1000)) AS MetroCubico  "+tb_nombre+";";
-    final static String consulta_hora= "SELECT strftime('%H',DATETIME("+campo_fecha+",'localtime'))hora,printf(\"%.2f\",(AVG("+campo_litros_consumidos+"))) as Litro FROM "+tb_nombre+" GROUP BY strftime ('%H',"+campo_fecha+");";
+    final static String consulta_hora= "SELECT strftime('%H',DATETIME("+campo_fecha+"))hora,printf(\"%.2f\",(AVG("+campo_litros_consumidos+"))) as Litro FROM "+tb_nombre+" GROUP BY strftime ('%H',"+campo_fecha+");";
 
     final static String consulta_mes= "SELECT strftime('%m',DATETIME("+campo_fecha+",'localtime'))mes, printf(\"%.2f\",(AVG("+campo_litros_consumidos+"))) as Litro FROM "+tb_nombre+" GROUP BY strftime ('%m',"+campo_fecha+");";
     final static String consulta_dia= "SELECT strftime('%d',DATETIME("+campo_fecha+",'localtime'))dia, printf(\"%.2f\",(AVG("+campo_litros_consumidos+"))) as Litro FROM "+tb_nombre+" GROUP BY strftime ('%d',"+campo_fecha+");";

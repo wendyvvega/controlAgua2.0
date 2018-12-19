@@ -27,9 +27,10 @@
             android:layout_width="185dp"
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/imgMedidor"
+            android:layout_marginStart="77dp"
             android:layout_marginLeft="120dp"
-            android:layout_marginRight="81dp"
             android:layout_marginTop="110dp"
+            android:layout_marginRight="81dp"
             android:gravity="right"
             android:text="0.0"
             android:textSize="24sp" />
@@ -61,6 +62,29 @@
             android:text=""
             android:textOff=""
             android:textOn="" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtFlujo"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="104dp"
+            android:layout_marginTop="8dp"
+            android:text="Cantidad Total"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/txtFlujo"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="87dp"
+            android:layout_marginTop="2dp"
+            android:text="C/h"
+            android:textColor="@color/black" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -112,7 +136,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Cubico"
+                android:text="M^3"
                 android:textColor="@color/colorTexto"
                 android:textSize="25dp" />
         </RadioGroup>
