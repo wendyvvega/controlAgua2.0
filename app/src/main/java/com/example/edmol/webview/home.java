@@ -20,12 +20,15 @@ import java.util.ArrayList;
 public class home extends AppCompatActivity {
     private ImageView control, ajustes, grafica, manual;
     RelativeLayout display2;
-    String fondoActual;
+    TextView display;
+    String fondoActual, tamanoActual;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        display = (TextView) findViewById(R.id.seleccioneOpcion);
 
         control = (ImageView) findViewById(R.id.controlAgua);
         control.setOnClickListener(new View.OnClickListener() {
@@ -71,8 +74,9 @@ public class home extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
                 String fondoSeleccionado = data.getStringExtra("fondoSeleccionado").toString();
                 String tamanoSeleccionado = data.getStringExtra("tamanoSelecionado").toString();
-                Toast.makeText(this, tamanoSeleccionado, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, tamanoSeleccionado, Toast.LENGTH_SHORT).show();
                 fondoActual = fondoSeleccionado;
+                tamanoActual = tamanoSeleccionado;
                 switch (fondoActual) {
                     case "colorFondo1":
                         display2.setBackgroundColor(getResources().getColor(R.color.colorFondo1));
@@ -90,6 +94,17 @@ public class home extends AppCompatActivity {
                         Toast.makeText(this, "Algo malo pasó", Toast.LENGTH_SHORT).show();
                         break;
                 }
+                switch (tamanoSeleccionado) {
+                    case "tamano25":
+                        display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                        break;
+                    case "tamano30":
+                        display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                        break;
+                    case "tamano35":
+                        display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+                        break;
+                }
             }
 
         }
@@ -104,6 +119,7 @@ public class home extends AppCompatActivity {
     public void openManual() {
         Intent m = new Intent(getApplicationContext(), manual.class);
         m.putExtra("fondoActual",fondoActual);
+        m.putExtra("tamanoActual",tamanoActual);
         startActivityForResult(m,1);
     }
 

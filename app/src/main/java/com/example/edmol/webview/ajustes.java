@@ -93,15 +93,15 @@ public class ajustes extends AppCompatActivity {
                 String clickNombre = clickItem.getTamanoNombres();
 
                 if (position == 0) {
-                    display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                    display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
                     tamanoSelecionado = "tamano25";
                 }
                 if (position == 1) {
-                    display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                    display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
                     tamanoSelecionado = "tamano30";
                 }
                 if (position == 2) {
-                    display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
+                    display.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
                     tamanoSelecionado = "tamano35";
                 }
             }
