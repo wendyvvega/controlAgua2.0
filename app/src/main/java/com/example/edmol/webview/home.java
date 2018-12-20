@@ -65,6 +65,7 @@ public class home extends AppCompatActivity {
         display2 = (RelativeLayout) findViewById(R.id.Fondo);
         display2.setBackgroundColor(getResources().getColor(R.color.colorFondo1));
         fondoActual="colorFondo1";
+        tamanoActual="tamano30";
     }
 
     @Override

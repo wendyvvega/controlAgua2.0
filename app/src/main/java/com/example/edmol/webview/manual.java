@@ -34,8 +34,7 @@ public class manual extends AppCompatActivity {
         volver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), home.class);
-                startActivity(i);
+                finish();
             }
         });
 
