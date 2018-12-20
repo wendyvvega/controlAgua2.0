@@ -133,6 +133,7 @@ public class home extends AppCompatActivity {
 
     public void openGrafica() {
         Intent g = new Intent(this, webView.class);
+        g.putExtra("fondoActual",fondoActual);
         startActivity(g);
     }
 }

@@ -105,39 +105,51 @@ public class control extends AppCompatActivity implements TextWatcher {
 
 
         String fondoActual, tamanoActual;
-        fondoActual = getIntent().getExtras().getString("fondoActual");
-        tamanoActual = getIntent().getExtras().getString("tamanoActual");
-        switch (fondoActual) {
-            case "colorFondo1":
-                display2.setBackgroundColor(getResources().getColor(R.color.colorFondo1));
-                break;
-            case "colorFondo2":
-                display2.setBackgroundColor(getResources().getColor(R.color.colorFondo2));
-                break;
-            case "colorFondo3":
-                display2.setBackgroundColor(getResources().getColor(R.color.colorFondo3));
-                break;
-            case "colorFondo4":
-                display2.setBackgroundColor(getResources().getColor(R.color.colorFondo4));
-                break;
-            default:
-                Toast.makeText(this, "Algo malo pasó", Toast.LENGTH_SHORT).show();
-                break;
+        Intent i =getIntent();
+        if(i.hasExtra("fondoSeleccionado")){
+            fondoActual = i.getExtras().getString("fondoActual");
+            switch (fondoActual) {
+                case "colorFondo1":
+                    display2.setBackgroundColor(getResources().getColor(R.color.colorFondo1));
+                    break;
+                case "colorFondo2":
+                    display2.setBackgroundColor(getResources().getColor(R.color.colorFondo2));
+                    break;
+                case "colorFondo3":
+                    display2.setBackgroundColor(getResources().getColor(R.color.colorFondo3));
+                    break;
+                case "colorFondo4":
+                    display2.setBackgroundColor(getResources().getColor(R.color.colorFondo4));
+                    break;
+                default:
+                    Toast.makeText(this, "Algo malo pasó", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+
+        }
+        //fondoActual = getIntent().getExtras().getString("fondoActual");
+
+       // tamanoActual = getIntent().getExtras().getString("tamanoActual");
+        if(i.hasExtra("tamanoSeleccionado")){
+            tamanoActual = i.getExtras().getString("tamanoActual");
+
+            switch (tamanoActual) {
+                case "tamano25":
+                    textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                    break;
+                case "tamano30":
+                    textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                    break;
+                case "tamano35":
+                    textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+                    break;
+                default:
+                    break;
+            }
+
         }
 
-        switch (tamanoActual) {
-            case "tamano25":
-                textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-                break;
-            case "tamano30":
-                textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-                break;
-            case "tamano35":
-                textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
-                break;
-            default:
-                break;
-        }
+
 
         btnModo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

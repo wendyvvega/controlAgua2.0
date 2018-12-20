@@ -1,9 +1,11 @@
 package com.example.edmol.webview;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -17,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -71,6 +75,8 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
     private CheckBox cMc;
     private LineData lineData;
     private  BarData data;
+    private ConstraintLayout constr;
+    private TextView filtra;
     private  AdminBD bd = new AdminBD(this);
     final String[] meses = new String[] { "Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dec"};
     int seleccion;
@@ -94,6 +100,10 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         flecha.setOnClickListener(this);
         barraH = findViewById(R.id.barChart);
         chart = findViewById(R.id.lineChart);
+        constr= findViewById(R.id.lConst);
+        filtra=findViewById(R.id.filtrar);
+
+
 
         barraH.setNoDataText("Selecciona un filtro para mostrar los datos");
         barraH.invalidate();
@@ -105,7 +115,26 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         spTgraf.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
 
 
+        String fondoActual;
+        fondoActual = getIntent().getExtras().getString("fondoActual");
 
+        switch (fondoActual) {
+            case "colorFondo1":
+                constr.setBackgroundColor(getResources().getColor(R.color.colorFondo1));
+                break;
+            case "colorFondo2":
+                constr.setBackgroundColor(getResources().getColor(R.color.colorFondo2));
+                break;
+            case "colorFondo3":
+                constr.setBackgroundColor(getResources().getColor(R.color.colorFondo3));
+                break;
+            case "colorFondo4":
+                constr.setBackgroundColor(getResources().getColor(R.color.colorFondo4));
+                break;
+            default:
+                Toast.makeText(this, "Algo malo pasó", Toast.LENGTH_SHORT).show();
+                break;
+        }
 
         //webView = findViewById(R.id.vistaWeb);
 
@@ -334,6 +363,7 @@ public class webView extends AppCompatActivity implements OnChartGestureListener
         dataSetL.setDrawHighlightIndicators(true);
         dataSetL.setHighLightColor(Color.BLACK);
         dataSetL.setDrawFilled(true);
+        dataSetL.setCircleColor(2354);
         dataSetL.setColors(ColorTemplate.COLORFUL_COLORS);
         Collections.sort(entrada, new EntryXComparator());
        lineData= new LineData(dataSetL);

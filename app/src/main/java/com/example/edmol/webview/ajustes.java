@@ -128,7 +128,7 @@ public class ajustes extends AppCompatActivity {
 
         switch (tamanoSelecionado){
             case "tamano25":
-                back.putExtra("tamanoSelecionado", tamanoSelecionado);
+                back.putExtra("tamanoSeleccionado", tamanoSelecionado);
             case "tamano30":
                 back.putExtra("tamanoSelecionado", tamanoSelecionado);
             case "tamano35":
